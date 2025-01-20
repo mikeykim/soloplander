@@ -150,11 +150,22 @@ export default function SolopreneurCard({ solopreneur, isFirst }: Props) {
                 borderRadius: '8px',
                 transform: 'scale(0.9)',
                 transformOrigin: 'top',
-                maxWidth: '100%'
+                maxWidth: '100%',
+                backgroundColor: 'white',
+                minHeight: '400px'
               }}
-              sandbox="allow-same-origin allow-scripts allow-popups allow-forms"
+              sandbox="allow-same-origin allow-scripts allow-popups allow-forms allow-presentation"
               loading="lazy"
+              importance="low"
               referrerPolicy="no-referrer"
+              onLoad={(e) => {
+                const iframe = e.currentTarget;
+                try {
+                  iframe.contentWindow?.postMessage({ type: 'resize-iframe' }, '*');
+                } catch (error) {
+                  console.log('iframe load error handled gracefully');
+                }
+              }}
               onError={(e) => {
                 e.currentTarget.style.display = 'none';
                 const fallback = document.createElement('div');

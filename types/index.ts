@@ -14,6 +14,13 @@ export interface ISolopreneur {
     previews?: {
       youtube?: string;
       twitter?: string;
+      website?: string;
     }
   };
+}
+
+interface IPreview {
+  youtube?: string;
+  twitter?: string;
+  website?: string;
 } 

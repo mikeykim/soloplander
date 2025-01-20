@@ -12,6 +12,9 @@ export async function GET(request: Request) {
     const response = await fetch(url)
     const html = await response.text()
     
+    // Flutter 웹앱인지 확인
+    const isFlutterApp = html.includes('flutter.js') || html.includes('_flutter')
+    
     // viewport 메타 태그와 기본 스타일 추가
     const modifiedHtml = html.replace(
       /<head>/i,
@@ -26,17 +29,42 @@ export async function GET(request: Request) {
             overflow: auto;
           }
           body {
-            zoom: 0.75;
+            transform: scale(0.9);
             transform-origin: top left;
+            background: white;
           }
-        </style>`
+          img {
+            max-width: 100%;
+            height: auto;
+          }
+        </style>
+        ${isFlutterApp ? `
+          <script>
+            // Flutter 관련 에러 방지
+            window._flutter = {};
+            window.addEventListener('error', function(e) {
+              if (e.message.includes('flutter') || e.message.includes('_flutter')) {
+                e.preventDefault();
+              }
+            });
+          </script>
+        ` : ''}
+        <script>
+          window.addEventListener('message', function(e) {
+            if (e.data.type === 'resize-iframe') {
+              const height = document.documentElement.scrollHeight;
+              window.parent.postMessage({ type: 'iframe-height', height }, '*');
+            }
+          });
+        </script>`
     )
     
     return new NextResponse(modifiedHtml, {
       headers: {
         'Content-Type': 'text/html',
         'Access-Control-Allow-Origin': '*',
-        'X-Frame-Options': 'SAMEORIGIN'
+        'X-Frame-Options': 'SAMEORIGIN',
+        'Content-Security-Policy': "default-src 'self' 'unsafe-inline' 'unsafe-eval' data: blob: *"
       }
     })
   } catch (error) {
