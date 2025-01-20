@@ -31,11 +31,11 @@ export default function NewsletterSignup() {
   return (
     <section className={styles.container}>
       <div className={styles.content}>
-        <h2>Stay Updated</h2>
+        <h2>Join Our Newsletter</h2>
         <p>
-          We're preparing to share even more inspiring stories from passionate solopreneurs around the world. 
-          Want to be the first to meet these amazing creators? Join our waiting list below and become part of 
-          this growing community of dreamers and doers!
+          Get weekly updates with solopreneur success stories and insights. 
+          Learn from experienced creators and get valuable tips delivered 
+          straight to your inbox.
         </p>
         
         <form onSubmit={handleSubmit} className={styles.form}>

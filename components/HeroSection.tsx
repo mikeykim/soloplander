@@ -12,9 +12,9 @@ export default function HeroSection() {
             <span className={`${styles.highlight} ${styles.secondary}`}>Worldwide</span>
           </h1>
           <p>
-            Are you a passionate creator building your own path? I'd love to showcase your journey! This community 
-            celebrates solopreneurs who share their growth, inspire others, and make a difference. 
-            Reach out through the contact button below, and let's add your story to this inspiring collection.
+            Are you a passionate creator building your own path? Join our community 
+            of inspiring solopreneurs who share their growth and make a difference. 
+            Reach out below to add your story to this collection.
           </p>
           <a 
             href="mailto:mkingg04@gmail.com?subject=Contact from SolopLander"
