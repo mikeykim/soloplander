@@ -5,6 +5,7 @@ export const solopreneursData: ISolopreneur[] = [
     name: "Alex Hormozi",
     region: "USA",
     image: "/images/alex-hormozi.jpg",
+    gender: "male",
     description: "A business strategist and content creator focused on scaling and sales growth.",
     links: {
       youtube: "https://www.youtube.com/alexhormozi",
@@ -18,6 +19,7 @@ export const solopreneursData: ISolopreneur[] = [
     name: "Pat Walls",
     region: "USA",
     image: "/images/pat-walls.jpg",
+    gender: "male",
     description: "A platform curator sharing success stories and business ideas for solopreneurs.",
     links: {
       youtube: "https://www.youtube.com/@starterstory",
@@ -31,7 +33,8 @@ export const solopreneursData: ISolopreneur[] = [
   {
     name: "Pieter Levels",
     region: "Europe",
-    image: "/images/europe.png",
+    image: "/images/pieter.png",
+    gender: "male",
     description: "Creator of Nomad List and Remote OK, building profitable startups as a solopreneur.",
     links: {
       twitter: "https://twitter.com/levelsio",
@@ -45,6 +48,7 @@ export const solopreneursData: ISolopreneur[] = [
     name: "Marc Lou",
     region: "Europe",
     image: "/images/marc-lou.jpg",
+    gender: "male",
     description: "Building simple tools for creators and helping others build profitable side projects.",
     links: {
       youtube: "https://www.youtube.com/@marclou",
@@ -58,7 +62,8 @@ export const solopreneursData: ISolopreneur[] = [
   {
     name: "Ruri Ohama",
     region: "Asia",
-    image: "/images/asia.png",
+    image: "/images/ruri-ohama.jpg",
+    gender: "female",
     description: "Digital creator focused on helping others achieve location independence.",
     links: {
       youtube: "https://www.youtube.com/@ruriohama",
@@ -74,6 +79,7 @@ export const solopreneursData: ISolopreneur[] = [
     name: "Kei Fujikawa",
     region: "Asia",
     image: "/images/kei-fujikawa.png",
+    gender: "male",
     description: "Building sustainable businesses while promoting digital literacy in Asia.",
     links: {
       youtube: "https://www.youtube.com/@kei_tokyo_japan",
@@ -87,6 +93,7 @@ export const solopreneursData: ISolopreneur[] = [
     name: "Wes Mcdowell",
     region: "USA",
     image: "/images/wes-mcdowell.jpg",
+    gender: "male",
     description: "A digital marketer helping small businesses succeed with websites and online strategies.",
     links: {
       youtube: "https://www.youtube.com/@WesMcDowellInc",
@@ -100,6 +107,7 @@ export const solopreneursData: ISolopreneur[] = [
     name: "Charlie Chang",
     region: "USA",
     image: "/images/charlie-chang.jpg",
+    gender: "male",
     description: "A YouTuber and investor sharing financial and business advice.",
     links: {
       youtube: "https://www.youtube.com/@CharlieChang",
@@ -114,6 +122,7 @@ export const solopreneursData: ISolopreneur[] = [
     name: "Noah Kagan",
     region: "USA",
     image: "/images/noah-kagan.jpg",
+    gender: "male",
     description: "A solopreneur who built successful SaaS businesses like AppSumo.",
     links: {
       youtube: "https://www.youtube.com/@noahkagan",
@@ -129,6 +138,7 @@ export const solopreneursData: ISolopreneur[] = [
     name: "Ben AI",
     region: "USA",
     image: "/images/ben-ai.png",
+    gender: "male",
     description: "A content creator leveraging AI tools for productivity and innovation.",
     links: {
       youtube: "https://www.youtube.com/@BenAI92",
@@ -142,6 +152,7 @@ export const solopreneursData: ISolopreneur[] = [
     name: "Greg Isenberg",
     region: "USA",
     image: "/images/greg-isenberg.jpg",
+    gender: "male",
     description: "A creator specializing in building communities and online networks.",
     links: {
       youtube: "https://www.youtube.com/@gregisenberg",
@@ -155,6 +166,7 @@ export const solopreneursData: ISolopreneur[] = [
     name: "Phoebe Yu",
     region: "Asia",
     image: "/images/phoebe-yu.jpg",
+    gender: "female",
     description: "A creator focused on building profitable side projects and sharing insights on entrepreneurship.",
     links: {
       youtube: "https://www.youtube.com/@phoebeyutbt",
@@ -168,6 +180,7 @@ export const solopreneursData: ISolopreneur[] = [
     name: "Stefanovic",
     region: "Europe",
     image: "/images/stefanovic.jpg",
+    gender: "male",
     description: "A YouTuber and life coach who left a $170K/year data analyst job to pursue his passions.",
     links: {
       youtube: "https://www.youtube.com/@Stefanovic92",
@@ -182,6 +195,7 @@ export const solopreneursData: ISolopreneur[] = [
     name: "Timo Nikolai",
     region: "Europe",
     image: "/images/timo-nikolai.jpg",
+    gender: "male",
     description: "A German-speaking YouTuber and marketer based in Bangkok, developing AI software and digital products.",
     links: {
       youtube: "https://www.youtube.com/@timo_ai",
@@ -195,6 +209,7 @@ export const solopreneursData: ISolopreneur[] = [
     name: "David Ondrej",
     region: "Europe",
     image: "/images/david-ondrej.jpg",
+    gender: "male",
     description: "A YouTuber and life coach who left a $170K/year data analyst job to pursue his passions.",
     links: {
       youtube: "https://www.youtube.com/@davidondrej",
@@ -210,6 +225,7 @@ export const solopreneursData: ISolopreneur[] = [
     name: "Bianca Graulau",
     region: "Europe",
     image: "/images/bianca-graulau.png",
+    gender: "female",
     description: "News reporter telling stories about the world. ",
     links: {
       youtube: "https://www.youtube.com/@biancagraulau",
@@ -222,6 +238,7 @@ export const solopreneursData: ISolopreneur[] = [
     name: "Mark Manson",
     region: "USA",
     image: "/images/mark-manson.png",
+    gender: "male",
     description: "1 NY Times Bestselling Author. World Champion Non-Fuck-Giver",
     links: {
       youtube: "https://www.youtube.com/@IAmMarkManson",

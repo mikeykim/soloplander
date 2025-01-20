@@ -5,6 +5,7 @@ export interface ISolopreneur {
   region: RegionType;
   image: string;
   description: string;
+  gender: 'male' | 'female';
   links: {
     youtube?: string;
     twitter?: string;

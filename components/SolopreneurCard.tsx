@@ -174,6 +174,18 @@ export default function SolopreneurCard({ solopreneur, isFirst }: Props) {
     }
   };
 
+  const getLinksText = (links: ISolopreneur['links']) => {
+    const platforms = [];
+    if (links.youtube) platforms.push('YouTube');
+    if (links.twitter) platforms.push('X');
+    if (links.website) platforms.push('website');
+
+    const pronoun = solopreneur.gender === 'female' ? 'her' : 'his';
+    return `Please check ${pronoun} ${platforms.slice(0, -1).join(', ')}${
+      platforms.length > 1 ? ' and ' : ''
+    }${platforms[platforms.length - 1]}`;
+  };
+
   const renderLinks = () => {
     const availableLinks = []
     if (solopreneur.links.youtube) availableLinks.push('YouTube')
