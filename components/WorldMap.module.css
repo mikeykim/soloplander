@@ -1,0 +1,167 @@
+.container {
+  position: relative;
+  padding: 40px;
+  background-color: var(--white);
+}
+
+.mapWrapper {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+  max-width: 1140px;
+  margin: 0 auto;
+  padding: 0 1rem;
+  transition: all 0.5s ease;
+}
+
+.mapWrapperSelected {
+  grid-template-columns: minmax(300px, 350px) 1fr;
+  gap: 2rem;
+}
+
+.mapItem {
+  position: relative;
+  transition: all 0.5s ease;
+  display: flex;
+  justify-content: center;
+  opacity: 1;
+}
+
+.fadeOut {
+  opacity: 0;
+  width: 0;
+  margin: 0;
+  padding: 0;
+  transform: scale(0);
+  pointer-events: none;
+}
+
+.selectedRegionInfo {
+  opacity: 0;
+  animation: fadeIn 0.5s ease 0.2s forwards;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.mapLink {
+  display: block;
+  position: relative;
+  width: 100%;
+  max-width: 280px;
+  cursor: pointer;
+}
+
+.mapImage {
+  width: 100%;
+  height: auto;
+  border-radius: 24px;
+  object-fit: contain;
+}
+
+.mapTooltip {
+  position: absolute;
+  top: -40px;
+  left: 50%;
+  transform: translateX(-50%);
+  color: #6a6e6b;
+  font-weight: 600;
+  font-size: 1.1rem;
+  padding: 8px 16px;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  z-index: 10;
+  white-space: nowrap;
+}
+
+.mapItem:hover {
+  transform: translateY(-10px);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+}
+
+.mapItem:hover .mapTooltip {
+  opacity: 1;
+}
+
+.regionContent {
+  opacity: 0;
+  animation: fadeIn 0.5s ease forwards;
+  margin-top: 3rem;
+  padding: 0 1rem;
+}
+
+.solopreneursGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 3rem 2.5rem;
+  max-width: 1140px;
+  margin: 0 auto;
+  justify-items: center;
+  padding: 3rem 1.5rem;
+}
+
+.solopreneursGrid > * {
+  max-width: 340px;
+  width: 100%;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* 반응형 처리 */
+@media (max-width: 1024px) {
+  .mapWrapper {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+  }
+  
+  .mapLink {
+    max-width: 250px;
+  }
+
+  .solopreneursGrid {
+    grid-template-columns: repeat(2, 1fr);
+    max-width: 800px;
+  }
+
+  .solopreneursGrid > * {
+    max-width: 360px;
+  }
+}
+
+@media (max-width: 768px) {
+  .mapWrapper {
+    grid-template-columns: repeat(1, 1fr);
+    gap: 24px;
+  }
+  
+  .mapLink {
+    max-width: 400px;
+  }
+  
+  .mapTooltip {
+    font-size: 1rem;
+    top: -35px;
+  }
+
+  .solopreneursGrid {
+    grid-template-columns: 1fr;
+    max-width: 520px;
+  }
+
+  .solopreneursGrid > * {
+    max-width: 520px;
+  }
+
+  .regionContent {
+    margin-top: 1rem;
+  }
+} 

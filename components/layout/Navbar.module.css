@@ -1,0 +1,38 @@
+.navbar {
+  background-color: var(--white);
+  border-bottom: 1px solid #eaeaea;
+  padding: 1rem;
+}
+
+.container {
+  max-width: 1140px;
+  margin: 0 auto;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 0.5rem 1rem;
+}
+
+.logo {
+  text-decoration: none;
+  transition: color 0.3s;
+  display: flex;
+  align-items: center;
+}
+
+.navLinks {
+  display: flex;
+  gap: 2rem;
+}
+
+.navLinks a {
+  color: var(--text);
+  font-size: 1.2rem;
+  text-decoration: none;
+  transition: color 0.3s;
+  font-weight: 600;
+}
+
+.navLinks a:hover {
+  color: var(--primary);
+} 

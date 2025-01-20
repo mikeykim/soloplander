@@ -1,0 +1,74 @@
+.hero {
+  padding: 80px 24px;
+  background-color: var(--white);
+  color: var(--text);
+}
+
+.wrapper {
+  display: flex;
+  max-width: 1140px;
+  margin: 0 auto;
+  justify-content: center;
+  align-items: center;
+  gap: 2rem;
+  padding: 0 1rem;
+}
+
+.split {
+  flex: 1;
+  max-width: 500px;
+  text-align: left;
+}
+
+.split h1 {
+  margin-bottom: 24px;
+}
+
+.highlight {
+  display: block;
+  font-size: 48px;
+  line-height: 1.2;
+}
+
+.highlight.primary {
+  color: var(--primary);
+}
+
+.highlight.secondary {
+  color: #6a6e6b;
+}
+
+.split p {
+  font-size: 18px;
+  line-height: 1.6;
+  margin-bottom: 24px;
+}
+
+.button {
+  display: inline-block;
+  padding: 12px 25px;
+  background-color: var(--primary);
+  color: var(--white);
+  border-radius: 4px;
+  text-decoration: none;
+  transition: background-color 0.3s;
+}
+
+.button:hover {
+  background-color: var(--hover);
+}
+
+@media (max-width: 768px) {
+  .wrapper {
+    flex-direction: column;
+  }
+
+  .highlight {
+    font-size: 36px;
+  }
+
+  .split {
+    max-width: 400px;
+    text-align: left;
+  }
+} 
