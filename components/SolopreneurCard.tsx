@@ -199,13 +199,13 @@ export default function SolopreneurCard({ solopreneur, isFirst }: Props) {
     if (solopreneur.links.twitter) availableLinks.push('X')
     if (solopreneur.links.website) availableLinks.push('website')
 
+    const pronoun = solopreneur.gender === 'female' ? 'her' : 'his'
+
     const formatText = (links: string[]) => {
       if (links.length === 1) return `Please check ${pronoun} ${links[0]}.`
       if (links.length === 2) return `Please check ${pronoun} ${links[0]} and ${links[1]}.`
-      return `Please check ${pronoun} ${links.slice(0, -1).join(', ')}, and ${links[links.length - 1]}.`
+      return `Please check ${pronoun} ${links.slice(0, -1).join(' , ')} and ${links[links.length - 1]}.`
     }
-
-    const pronoun = solopreneur.name.endsWith('a') ? 'her' : 'his'
 
     return (
       <div className={styles.links}>
