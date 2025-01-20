@@ -145,12 +145,17 @@ export default function SolopreneurCard({ solopreneur, isFirst }: Props) {
               src={`/api/preview?url=${encodeURIComponent(solopreneur.links.website)}`}
               width="400"
               height="300"
-              style={{ border: 'none', borderRadius: '8px' }}
+              style={{ 
+                border: 'none', 
+                borderRadius: '8px',
+                transform: 'scale(0.9)',
+                transformOrigin: 'top',
+                maxWidth: '100%'
+              }}
               sandbox="allow-same-origin allow-scripts allow-popups allow-forms"
               loading="lazy"
               referrerPolicy="no-referrer"
               onError={(e) => {
-                // iframe 로드 실패시 대체 UI 표시
                 e.currentTarget.style.display = 'none';
                 const fallback = document.createElement('div');
                 fallback.className = styles.websitePreview;
