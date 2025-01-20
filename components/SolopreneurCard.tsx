@@ -180,7 +180,9 @@ export default function SolopreneurCard({ solopreneur, isFirst }: Props) {
     if (links.twitter) platforms.push('X');
     if (links.website) platforms.push('website');
 
+    // solopreneur prop을 사용하여 gender 확인
     const pronoun = solopreneur.gender === 'female' ? 'her' : 'his';
+    
     return `Please check ${pronoun} ${platforms.slice(0, -1).join(', ')}${
       platforms.length > 1 ? ' and ' : ''
     }${platforms[platforms.length - 1]}`;
