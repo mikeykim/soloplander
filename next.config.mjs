@@ -11,7 +11,10 @@ const nextConfig = {
         hostname: 'd3e54v103j8qbb.cloudfront.net'
       }
     ],
-    domains: ['images.unsplash.com'],
+    unoptimized: true,
+    dangerouslyAllowSVG: true,
+    contentDispositionType: 'attachment',
+    contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;",
   },
   async headers() {
     return [

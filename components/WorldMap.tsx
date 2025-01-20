@@ -38,10 +38,12 @@ export default function WorldMap() {
               onClick={() => handleRegionClick('america')}
             >
               <Image
-                src="/States.png"
+                src="/images/maps/states-map.png"
                 alt="America"
                 width={300}
                 height={200}
+                priority={true}
+                loading="eager"
                 className={styles.mapImage}
               />
               <div className={styles.mapTooltip}>America</div>
@@ -55,7 +57,7 @@ export default function WorldMap() {
               onClick={() => handleRegionClick('europe')}
             >
               <Image
-                src="/images/europe-map.png"
+                src="/images/maps/europe-map.png"
                 alt="Europe"
                 width={300}
                 height={200}
@@ -72,7 +74,7 @@ export default function WorldMap() {
               onClick={() => handleRegionClick('asia')}
             >
               <Image
-                src="/images/asia-map.png"
+                src="/images/maps/asia-map.png"
                 alt="Asia"
                 width={300}
                 height={200}
@@ -97,10 +99,12 @@ export default function WorldMap() {
             <div className={`${styles.mapItem} ${selectedRegion && selectedRegion !== 'america' ? styles.fadeOut : ''}`}>
               <div className={styles.mapLink} onClick={() => handleRegionClick('america')}>
                 <Image
-                  src="/States.png"
+                  src="/images/maps/states-map.png"
                   alt="America"
                   width={300}
                   height={200}
+                  priority={true}
+                  loading="eager"
                   className={styles.mapImage}
                 />
                 <div className={styles.mapTooltip}>America</div>
@@ -109,7 +113,7 @@ export default function WorldMap() {
             <div className={`${styles.mapItem} ${selectedRegion && selectedRegion !== 'europe' ? styles.fadeOut : ''}`}>
               <div className={styles.mapLink} onClick={() => handleRegionClick('europe')}>
                 <Image
-                  src="/images/europe-map.png"
+                  src="/images/maps/europe-map.png"
                   alt="Europe"
                   width={300}
                   height={200}
@@ -121,7 +125,7 @@ export default function WorldMap() {
             <div className={`${styles.mapItem} ${selectedRegion && selectedRegion !== 'asia' ? styles.fadeOut : ''}`}>
               <div className={styles.mapLink} onClick={() => handleRegionClick('asia')}>
                 <Image
-                  src="/images/asia-map.png"
+                  src="/images/maps/asia-map.png"
                   alt="Asia"
                   width={300}
                   height={200}
