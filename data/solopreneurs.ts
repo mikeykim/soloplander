@@ -38,7 +38,6 @@ export const solopreneursData: ISolopreneur[] = [
     description: "Creator of Nomad List and Remote OK, building profitable startups as a solopreneur.",
     links: {
       twitter: "https://twitter.com/levelsio",
-      website: "https://levelsio.com/",
       previews: {
         twitter: "/images/previews/twitter/pieter-levels-twitter.png"
       }

@@ -180,12 +180,17 @@ export default function SolopreneurCard({ solopreneur, isFirst }: Props) {
     if (links.twitter) platforms.push('X');
     if (links.website) platforms.push('website');
 
-    // solopreneur prop을 사용하여 gender 확인
     const pronoun = solopreneur.gender === 'female' ? 'her' : 'his';
     
-    return `Please check ${pronoun} ${platforms.slice(0, -1).join(', ')}${
-      platforms.length > 1 ? ' and ' : ''
-    }${platforms[platforms.length - 1]}`;
+    // 플랫폼이 3개 이상일 때 처리
+    if (platforms.length >= 3) {
+      const firstParts = platforms.slice(0, -1);
+      const lastPart = platforms[platforms.length - 1];
+      return `Please check ${pronoun} ${firstParts.join(' , ')} and ${lastPart}`;
+    }
+    
+    // 플랫폼이 1-2개일 때 처리
+    return `Please check ${pronoun} ${platforms.join(' and ')}`;
   };
 
   const renderLinks = () => {
