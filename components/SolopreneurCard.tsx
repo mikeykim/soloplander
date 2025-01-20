@@ -138,17 +138,36 @@ export default function SolopreneurCard({ solopreneur, isFirst }: Props) {
 
       case 'website':
         return (
-          <div className={styles.websitePreview}>
-            <h3>{solopreneur.name}&apos;s Website</h3>
-            <p className={styles.websiteUrl}>{solopreneur.links.website}</p>
-            <a 
-              href={solopreneur.links.website}
-              target="_blank"
-              rel="noopener noreferrer"
-              className={styles.previewButton}
-            >
-              Visit Website
-            </a>
+          <div className={styles.previewContent}>
+            <iframe
+              className={styles.previewIframe}
+              src={solopreneur.links.website}
+              width="400"
+              height="300"
+              style={{ border: 'none', borderRadius: '8px' }}
+              sandbox="allow-same-origin allow-scripts allow-popups allow-forms"
+              loading="lazy"
+              referrerPolicy="no-referrer"
+              onError={(e) => {
+                // iframe 로드 실패시 대체 UI 표시
+                e.currentTarget.style.display = 'none';
+                const fallback = document.createElement('div');
+                fallback.className = styles.websitePreview;
+                fallback.innerHTML = `
+                  <h3>${solopreneur.name}'s Website</h3>
+                  <p class="${styles.websiteUrl}">${solopreneur.links.website}</p>
+                  <a 
+                    href="${solopreneur.links.website}"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="${styles.previewButton}"
+                  >
+                    Visit Website
+                  </a>
+                `;
+                e.currentTarget.parentNode?.appendChild(fallback);
+              }}
+            />
           </div>
         );
 
