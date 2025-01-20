@@ -141,7 +141,7 @@ export default function SolopreneurCard({ solopreneur, isFirst }: Props) {
           <div className={styles.previewContent}>
             <iframe
               className={styles.previewIframe}
-              src={solopreneur.links.website}
+              src={`/api/preview?url=${encodeURIComponent(solopreneur.links.website)}`}
               width="400"
               height="300"
               style={{ border: 'none', borderRadius: '8px' }}

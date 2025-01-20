@@ -39,7 +39,7 @@ const nextConfig = {
               "style-src 'self' 'unsafe-inline'",
               "img-src 'self' data: https:",
               "font-src 'self' data:",
-              "frame-src *",  // 모든 도메인의 iframe 허용
+              "frame-src 'self'",  // 자체 도메인만 허용
               "connect-src 'self' https:",
               "media-src 'self' https:"
             ].join('; ')
