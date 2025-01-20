@@ -31,11 +31,11 @@ export const solopreneursData: ISolopreneur[] = [
   {
     name: "Pieter Levels",
     region: "Europe",
-    image: "/images/pieter.png",
+    image: "/images/europe.png",
     description: "Creator of Nomad List and Remote OK, building profitable startups as a solopreneur.",
     links: {
       twitter: "https://twitter.com/levelsio",
-      website: "https://pieter.com/",
+      website: "https://levelsio.com/",
       previews: {
         twitter: "/images/previews/twitter/pieter-levels-twitter.png"
       }
@@ -58,7 +58,7 @@ export const solopreneursData: ISolopreneur[] = [
   {
     name: "Ruri Ohama",
     region: "Asia",
-    image: "/images/ruri-ohama.jpg",
+    image: "/images/asia.png",
     description: "Digital creator focused on helping others achieve location independence.",
     links: {
       youtube: "https://www.youtube.com/@ruriohama",
@@ -73,7 +73,7 @@ export const solopreneursData: ISolopreneur[] = [
   {
     name: "Kei Fujikawa",
     region: "Asia",
-    image: "/images/Kei-Fujikawa.png",
+    image: "/images/kei-fujikawa.png",
     description: "Building sustainable businesses while promoting digital literacy in Asia.",
     links: {
       youtube: "https://www.youtube.com/@kei_tokyo_japan",
@@ -225,7 +225,6 @@ export const solopreneursData: ISolopreneur[] = [
     description: "1 NY Times Bestselling Author. World Champion Non-Fuck-Giver",
     links: {
       youtube: "https://www.youtube.com/@IAmMarkManson",
-      website: "https://markmanson.net/breakthrough",
       twitter: "https://x.com/iammarkmanson",
       previews: {
         youtube: "/images/previews/youtube/mark-manson-youtube.png",
