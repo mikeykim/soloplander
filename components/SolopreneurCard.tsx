@@ -137,6 +137,7 @@ export default function SolopreneurCard({ solopreneur, isFirst }: Props) {
         );
 
       case 'website':
+        if (!solopreneur.links.website) return null;
         return (
           <div className={styles.previewContent}>
             <iframe
