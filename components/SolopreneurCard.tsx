@@ -156,7 +156,6 @@ export default function SolopreneurCard({ solopreneur, isFirst }: Props) {
               }}
               sandbox="allow-same-origin allow-scripts allow-popups allow-forms allow-presentation"
               loading="lazy"
-              importance="low"
               referrerPolicy="no-referrer"
               onLoad={(e) => {
                 const iframe = e.currentTarget;
