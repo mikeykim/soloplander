@@ -216,6 +216,7 @@ export default function SolopreneurCard({ solopreneur, isFirst }: Props) {
     if (solopreneur.links.youtube) availableLinks.push('YouTube')
     if (solopreneur.links.twitter) availableLinks.push('X')
     if (solopreneur.links.website) availableLinks.push('website')
+    if (solopreneur.links.linkedin) availableLinks.push('linkedin')
 
     const pronoun = solopreneur.gender === 'female' ? 'her' : 'his'
 
@@ -274,9 +275,36 @@ export default function SolopreneurCard({ solopreneur, isFirst }: Props) {
                 </a>
               )
             }
+            if (word.includes('linkedin')) {
+              return (
+                <a 
+                  key={index}
+                  href={solopreneur.links.linkedin} 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className={styles.link}
+                >
+                  linkedin
+                </a>
+              )
+            }
             return <span key={index}> {word} </span>
           })}
         </p>
+      </div>
+    )
+  }
+
+  const renderContent = () => {
+    return (
+      <div className={styles.content}>
+        <h2>{solopreneur.name}</h2>
+        <p 
+          style={solopreneur.name === "Ara Koh" ? { WebkitLineClamp: 4 } : undefined}
+        >
+          {solopreneur.description}
+        </p>
+        {renderLinks()}
       </div>
     )
   }
@@ -294,11 +322,7 @@ export default function SolopreneurCard({ solopreneur, isFirst }: Props) {
             style={{ objectFit: "cover" }}
           />
         </div>
-        <div className={styles.content}>
-          <h2>{solopreneur.name}</h2>
-          <p>{solopreneur.description}</p>
-          {renderLinks()}
-        </div>
+        {renderContent()}
       </div>
       <div 
         className={styles.previewWrapper}

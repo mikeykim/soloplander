@@ -11,6 +11,7 @@ export interface ISolopreneur {
     twitter?: string;
     website?: string;
     instagram?: string;
+    linkedin?: string;
     previews?: {
       youtube?: string;
       twitter?: string;

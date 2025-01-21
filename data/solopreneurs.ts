@@ -75,6 +75,16 @@ export const solopreneursData: ISolopreneur[] = [
     }
   },
   {
+    name: "Ara Koh",
+    region: "Asia",
+    image: "/images/ara-koh.png",
+    gender: "female",
+    description: "Creating B2B webtoons to make business more engaging, leveraging AI to craft customized, innovative digital content for global brands.",
+    links: {
+      linkedin: "https://www.linkedin.com/in/arakoh/"
+    }
+  },
+  {
     name: "Kei Fujikawa",
     region: "Asia",
     image: "/images/kei-fujikawa.png",
