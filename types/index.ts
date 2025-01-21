@@ -16,6 +16,7 @@ export interface ISolopreneur {
       youtube?: string;
       twitter?: string;
       website?: string;
+      linkedin?: string;
     }
   };
 }
