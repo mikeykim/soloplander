@@ -1,3 +1,5 @@
+'use client'
+
 import Link from 'next/link'
 import Image from 'next/image'
 import { FaLinkedin } from 'react-icons/fa'
@@ -5,6 +7,12 @@ import { MdEmail } from 'react-icons/md'
 import styles from './Footer.module.css'
 
 export default function Footer() {
+  const handleEmailClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
+    e.preventDefault()
+    const mailtoLink = "mailto:mkingg04@gmail.com?subject=Contact from SolopLander&body=Hi, I'd like to share my story with SolopLander."
+    window.open(mailtoLink, '_blank')
+  }
+
   return (
     <footer className={styles.footer}>
       <div className={styles.container}>
@@ -26,8 +34,9 @@ export default function Footer() {
             <FaLinkedin size={24} />
           </a>
           <a 
-            href="mailto:mkingg04@gmail.com"
+            href="mailto:mkingg04@gmail.com?subject=Contact from SolopLander&body=Hi, I'd like to share my story with SolopLander."
             className={styles.socialLink}
+            onClick={handleEmailClick}
           >
             <MdEmail size={24} />
           </a>
