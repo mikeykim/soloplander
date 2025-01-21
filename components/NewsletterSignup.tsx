@@ -12,18 +12,25 @@ export default function NewsletterSignup() {
     setStatus('loading')
 
     try {
-      // TODO: 실제 API 엔드포인트로 교체
       const response = await fetch('/api/newsletter', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email })
+        headers: { 
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
+        },
+        body: JSON.stringify({ email }),
+        credentials: 'same-origin'
       })
 
-      if (!response.ok) throw new Error('Failed to subscribe')
+      if (!response.ok) {
+        const errorData = await response.json()
+        throw new Error(errorData.error || 'Failed to subscribe')
+      }
       
       setStatus('success')
       setEmail('')
     } catch (error) {
+      console.error('Newsletter error:', error)
       setStatus('error')
     }
   }

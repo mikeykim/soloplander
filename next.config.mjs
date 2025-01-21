@@ -33,15 +33,15 @@ const nextConfig = {
           {
             key: 'Content-Security-Policy',
             value: [
-              "default-src 'self' https: data: 'unsafe-inline' 'unsafe-eval'",
-              "script-src 'self' 'unsafe-eval' 'unsafe-inline' https:",
+              "default-src * 'unsafe-inline' 'unsafe-eval'",
+              "script-src * 'unsafe-inline' 'unsafe-eval'",
               "style-src 'self' 'unsafe-inline' https:",
               "img-src 'self' data: https: blob:",
               "font-src 'self' data: https:",
               "connect-src 'self' https: wss:",
               "frame-src 'self' https:",
               "media-src 'self' https:",
-              "object-src 'none'",
+              "object-src 'self'",
               "base-uri 'self'"
             ].join('; ')
           }

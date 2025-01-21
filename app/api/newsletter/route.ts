@@ -16,17 +16,25 @@ const SHEET_NAME = 'Newsletter Subscribers' // 시트 이름
 
 export async function POST(req: Request) {
   try {
-    // CORS 헤더 추가
-    const headers = {
-      'Access-Control-Allow-Origin': '*',
-      'Access-Control-Allow-Methods': 'POST, OPTIONS',
-      'Access-Control-Allow-Headers': 'Content-Type'
-    }
-
     const { email } = await req.json()
     
-    // 현재 날짜/시간
+    if (!email) {
+      return NextResponse.json(
+        { error: 'Email is required' },
+        { status: 400 }
+      )
+    }
+
     const timestamp = new Date().toISOString()
+
+    // Google Sheets API 연결 확인
+    if (!sheets || !SPREADSHEET_ID) {
+      console.error('Google Sheets configuration error')
+      return NextResponse.json(
+        { error: 'Service configuration error' },
+        { status: 500 }
+      )
+    }
 
     await sheets.spreadsheets.values.append({
       spreadsheetId: SPREADSHEET_ID,
@@ -37,22 +45,12 @@ export async function POST(req: Request) {
       }
     })
 
-    return NextResponse.json(
-      { message: 'Subscribed successfully' },
-      { headers }
-    )
+    return NextResponse.json({ message: 'Subscribed successfully' })
   } catch (error) {
-    console.error('Newsletter subscription error:', error)
+    console.error('Newsletter API error:', error)
     return NextResponse.json(
-      { error: 'Failed to subscribe' },
-      { 
-        status: 500,
-        headers: {
-          'Access-Control-Allow-Origin': '*',
-          'Access-Control-Allow-Methods': 'POST, OPTIONS',
-          'Access-Control-Allow-Headers': 'Content-Type'
-        }
-      }
+      { error: error instanceof Error ? error.message : 'Failed to subscribe' },
+      { status: 500 }
     )
   }
 }
