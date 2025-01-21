@@ -15,6 +15,41 @@ export async function GET(request: Request) {
     // Flutter 웹앱인지 확인
     const isFlutterApp = html.includes('flutter.js') || html.includes('_flutter')
     
+    if (isFlutterApp) {
+      return new NextResponse(
+        `<html>
+          <head>
+            <meta name="viewport" content="width=device-width, initial-scale=1">
+            <style>
+              body {
+                margin: 0;
+                padding: 0;
+                background: white;
+              }
+              .screenshot {
+                width: 100%;
+                height: 100%;
+                object-fit: contain;
+              }
+            </style>
+          </head>
+          <body>
+            <img 
+              src="/images/previews/website/${url.split('//')[1].replace(/\//g, '-')}.png" 
+              alt="Website Preview"
+              class="screenshot"
+            />
+          </body>
+        </html>`,
+        {
+          headers: {
+            'Content-Type': 'text/html',
+            'Access-Control-Allow-Origin': '*'
+          }
+        }
+      )
+    }
+
     // viewport 메타 태그와 기본 스타일 추가
     const modifiedHtml = html.replace(
       /<head>/i,

@@ -94,7 +94,8 @@ export const solopreneursData: ISolopreneur[] = [
       youtube: "https://www.youtube.com/@kei_tokyo_japan",
       website: "https://flutterninjas.dev",
       previews: {
-        youtube: "/images/previews/youtube/kei-fujikawa-youtube.png"
+        youtube: "/images/previews/youtube/kei-fujikawa-youtube.png",
+        website: "/images/previews/website/flutterninjas.dev.png"
       }
     }
   },
