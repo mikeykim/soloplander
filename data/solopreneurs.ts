@@ -289,4 +289,18 @@ export const solopreneursData: ISolopreneur[] = [
       }
     }
   },
+  {
+    name: "Mack Gray",
+    region: "USA",
+    image: "/images/mack-gray.png",
+    gender: "male",
+    description: "Canadian Trader. Entrepreneurial Mindset. Business Advisor.",
+    links: {
+      youtube: "https://www.youtube.com/@TheMackGray_",
+      website: "https://www.rmtradinggroup.com/",
+      previews: {
+        youtube: "/images/previews/youtube/mack-gray-youtube.png"
+      }
+    }
+  },
 ] 
