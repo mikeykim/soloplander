@@ -67,6 +67,15 @@ export default function RootLayout({
             })(window,document,'script','dataLayer','GTM-TW734MXN');
           `}
         </Script>
+        <Script src="https://www.googletagmanager.com/gtag/js?id=G-NKB5VJTNGZ" strategy="afterInteractive" />
+        <Script id="google-analytics" strategy="afterInteractive">
+          {`
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+            gtag('config', 'G-NKB5VJTNGZ');
+          `}
+        </Script>
         <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
