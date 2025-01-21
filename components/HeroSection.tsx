@@ -17,10 +17,17 @@ export default function HeroSection() {
             Reach out below to add your story to this collection.
           </p>
           <a 
-            href="mailto:mkingg04@gmail.com?subject=Contact from SolopLander"
+            href="mailto:mkingg04@gmail.com?subject=Contact from SolopLander&body=Hi, I'd like to share my story with SolopLander."
             className={styles.button}
             target="_blank"
             rel="noopener noreferrer"
+            onClick={(e) => {
+              // 모바일 기기에서 메일 앱 실행 지원
+              const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent)
+              if (isMobile) {
+                window.location.href = `mailto:mkingg04@gmail.com?subject=Contact from SolopLander&body=Hi, I'd like to share my story with SolopLander.`
+              }
+            }}
           >
             Contact
           </a>
