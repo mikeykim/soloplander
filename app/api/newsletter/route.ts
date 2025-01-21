@@ -16,27 +16,57 @@ const SHEET_NAME = 'Newsletter Subscribers' // 시트 이름
 
 export async function POST(req: Request) {
   try {
+    // CORS 헤더 추가
+    const headers = {
+      'Access-Control-Allow-Origin': '*',
+      'Access-Control-Allow-Methods': 'POST, OPTIONS',
+      'Access-Control-Allow-Headers': 'Content-Type'
+    }
+
     const { email } = await req.json()
     
     // 현재 날짜/시간
     const timestamp = new Date().toISOString()
 
-    // 스프레드시트에 데이터 추가
     await sheets.spreadsheets.values.append({
       spreadsheetId: SPREADSHEET_ID,
-      range: `${SHEET_NAME}!A:B`, // A열: 타임스탬프, B열: 이메일
+      range: `${SHEET_NAME}!A:B`,
       valueInputOption: 'USER_ENTERED',
       requestBody: {
         values: [[timestamp, email]]
       }
     })
 
-    return NextResponse.json({ message: 'Subscribed successfully' })
+    return NextResponse.json(
+      { message: 'Subscribed successfully' },
+      { headers }
+    )
   } catch (error) {
     console.error('Newsletter subscription error:', error)
     return NextResponse.json(
       { error: 'Failed to subscribe' },
-      { status: 500 }
+      { 
+        status: 500,
+        headers: {
+          'Access-Control-Allow-Origin': '*',
+          'Access-Control-Allow-Methods': 'POST, OPTIONS',
+          'Access-Control-Allow-Headers': 'Content-Type'
+        }
+      }
     )
   }
+}
+
+// OPTIONS 요청 처리
+export async function OPTIONS() {
+  return NextResponse.json(
+    {},
+    {
+      headers: {
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Methods': 'POST, OPTIONS',
+        'Access-Control-Allow-Headers': 'Content-Type'
+      }
+    }
+  )
 } 
