@@ -14,7 +14,6 @@ const nextConfig = {
     unoptimized: true,
     dangerouslyAllowSVG: true,
     contentDispositionType: 'attachment',
-    contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;",
   },
   // 도메인 관련 설정 추가
   async rewrites() {
@@ -34,14 +33,16 @@ const nextConfig = {
           {
             key: 'Content-Security-Policy',
             value: [
-              "default-src 'self'",
-              "script-src 'self' 'unsafe-eval' 'unsafe-inline'",
-              "style-src 'self' 'unsafe-inline'",
-              "img-src 'self' data: https:",
-              "font-src 'self' data:",
-              "frame-src 'self'",  // 자체 도메인만 허용
-              "connect-src 'self' https:",
-              "media-src 'self' https:"
+              "default-src 'self' https: data: 'unsafe-inline' 'unsafe-eval'",
+              "script-src 'self' 'unsafe-eval' 'unsafe-inline' https:",
+              "style-src 'self' 'unsafe-inline' https:",
+              "img-src 'self' data: https: blob:",
+              "font-src 'self' data: https:",
+              "connect-src 'self' https: wss:",
+              "frame-src 'self' https:",
+              "media-src 'self' https:",
+              "object-src 'none'",
+              "base-uri 'self'"
             ].join('; ')
           }
         ],
