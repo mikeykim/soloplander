@@ -8,9 +8,8 @@ export default function HeroSection() {
     const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent)
     const mailtoLink = "mailto:mkingg04@gmail.com?subject=Contact from SolopLander&body=Hi, I'd like to share my story with SolopLander."
     
-    if (isMobile) {
-      window.location.href = mailtoLink
-    }
+    // 모든 환경에서 메일 클라이언트 실행
+    window.location.href = mailtoLink
   }
 
   return (
