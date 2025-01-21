@@ -331,10 +331,11 @@ export default function SolopreneurCard({ solopreneur, isFirst }: Props) {
         <div className={styles.imageWrapper}>
           <Image 
             src={solopreneur.image}
-            alt={solopreneur.name}
+            alt={`${solopreneur.name} - ${solopreneur.description}`}
             width={300}
             height={400}
             className={styles.image}
+            priority={isFirst}
             style={{ objectFit: "cover" }}
           />
         </div>
