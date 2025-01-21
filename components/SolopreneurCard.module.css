@@ -3,6 +3,7 @@
   width: 100%;
   max-width: 520px;
   margin: 0 auto;
+  height: 100%;
 }
 
 .card {
@@ -11,6 +12,9 @@
   overflow: hidden;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   transition: transform 0.3s ease, box-shadow 0.3s ease;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
 }
 
 .card:hover {
@@ -23,6 +27,7 @@
   height: 300px;
   position: relative;
   overflow: hidden;
+  flex-shrink: 0;
 }
 
 .image {
@@ -38,6 +43,10 @@
 
 .content {
   padding: 1.8rem;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 200px;
 }
 
 .content h2 {
@@ -51,12 +60,18 @@
   color: #5C5C5C;
   line-height: 1.6;
   margin-bottom: 1rem;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .links {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
+  margin-top: auto;
 }
 
 .linkText {

@@ -248,4 +248,45 @@ export const solopreneursData: ISolopreneur[] = [
       }
     }
   },
+  {
+    name: "Tammy Dinh",
+    region: "USA",
+    image: "/images/tammy-dinh.png",
+    gender: "female",
+    description: "Creative Visionary. Bold Storyteller. Relentless Dream Chaser.",
+    links: {
+      youtube: "https://www.youtube.com/@tammydinh",
+      website: "https://www.uncomfy.store/",
+      previews: {
+        youtube: "/images/previews/youtube/tammy-dinh-youtube.png"
+      }
+    }
+  },
+  {
+    name: "Jack Craig",
+    region: "USA",
+    image: "/images/jack-craig.png",
+    gender: "male",
+    description: "Finance Guru. Business Strategist. Wealth Architect",
+    links: {
+      youtube: "https://www.youtube.com/@jack_craig",
+      website: "https://jackcraigcoaching.com/",
+      previews: {
+        youtube: "/images/previews/youtube/jack-craig-youtube.png"
+      }
+    }
+  },
+  {
+    name: "Ryan Kelly",
+    region: "USA",
+    image: "/images/ryan-kelly.png",
+    gender: "male",
+    description: "Trailblazing Adventurer. Passionate Mountain Biker. Inspiring Content Creator.",
+    links: {
+      youtube: "https://www.youtube.com/@TheLoamRanger",
+      previews: {
+        youtube: "/images/previews/youtube/ryan-kelly-youtube.png"
+      }
+    }
+  },
 ] 
