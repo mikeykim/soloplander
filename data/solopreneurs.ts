@@ -79,7 +79,7 @@ export const solopreneursData: ISolopreneur[] = [
     region: "Asia",
     image: "/images/kei-fujikawa.png",
     gender: "male",
-    description: "Building sustainable businesses while promoting digital literacy in Asia.",
+    description: "Flutter Ninja. Expanding the Flutter development community and sharing innovative insights.",
     links: {
       youtube: "https://www.youtube.com/@kei_tokyo_japan",
       website: "https://flutterninjas.dev",
