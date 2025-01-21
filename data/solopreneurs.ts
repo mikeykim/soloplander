@@ -209,7 +209,7 @@ export const solopreneursData: ISolopreneur[] = [
     region: "Europe",
     image: "/images/david-ondrej.jpg",
     gender: "male",
-    description: "A YouTuber and life coach who left a $170K/year data analyst job to pursue his passions.",
+    description: "Explores the forefront of AI programming and deep learning through engaging content.",
     links: {
       youtube: "https://www.youtube.com/@davidondrej",
       website: "https://vectal.ai",
