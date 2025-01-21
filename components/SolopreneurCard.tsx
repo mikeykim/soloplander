@@ -136,6 +136,20 @@ export default function SolopreneurCard({ solopreneur, isFirst }: Props) {
           </div>
         );
 
+      case 'linkedin':
+        if (!solopreneur.links.previews?.linkedin) return null;
+        return (
+          <div className={styles.linkedinPreview}>
+            <Image
+              src={solopreneur.links.previews.linkedin}
+              alt={`${solopreneur.name}'s LinkedIn Profile`}
+              width={480}
+              height={270}
+              className={styles.previewImage}
+            />
+          </div>
+        );
+
       case 'website':
         if (!solopreneur.links.website) return null;
         return (
@@ -283,6 +297,8 @@ export default function SolopreneurCard({ solopreneur, isFirst }: Props) {
                   target="_blank" 
                   rel="noopener noreferrer"
                   className={styles.link}
+                  onMouseEnter={() => setActivePreview('linkedin')}
+                  onMouseLeave={() => setActivePreview(null)}
                 >
                   linkedin
                 </a>
