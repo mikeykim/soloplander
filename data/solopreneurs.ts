@@ -81,7 +81,10 @@ export const solopreneursData: ISolopreneur[] = [
     gender: "female",
     description: "Creating B2B webtoons to make business more engaging, leveraging AI to craft customized, innovative digital content for global brands.",
     links: {
-      linkedin: "https://www.linkedin.com/in/arakoh/"
+      linkedin: "https://www.linkedin.com/in/arakoh/",
+      previews: {
+        linkedin: "/images/previews/linkedin/ara-koh-linkedin.png"
+      }
     }
   },
   {

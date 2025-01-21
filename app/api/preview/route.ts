@@ -14,8 +14,10 @@ export async function GET(request: Request) {
     
     // Flutter 웹앱인지 확인
     const isFlutterApp = html.includes('flutter.js') || html.includes('_flutter')
+    // LinkedIn 프로필인지 확인
+    const isLinkedIn = url.includes('linkedin.com')
     
-    if (isFlutterApp) {
+    if (isFlutterApp || isLinkedIn) {
       return new NextResponse(
         `<html>
           <head>
