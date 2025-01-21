@@ -1,7 +1,18 @@
+'use client'
+
 import styles from './HeroSection.module.css'
 import Image from 'next/image'
 
 export default function HeroSection() {
+  const handleContact = () => {
+    const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent)
+    const mailtoLink = "mailto:mkingg04@gmail.com?subject=Contact from SolopLander&body=Hi, I'd like to share my story with SolopLander."
+    
+    if (isMobile) {
+      window.location.href = mailtoLink
+    }
+  }
+
   return (
     <section className={styles.hero}>
       <div className={styles.wrapper}>
@@ -21,13 +32,7 @@ export default function HeroSection() {
             className={styles.button}
             target="_blank"
             rel="noopener noreferrer"
-            onClick={(e) => {
-              // 모바일 기기에서 메일 앱 실행 지원
-              const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent)
-              if (isMobile) {
-                window.location.href = `mailto:mkingg04@gmail.com?subject=Contact from SolopLander&body=Hi, I'd like to share my story with SolopLander.`
-              }
-            }}
+            onClick={handleContact}
           >
             Contact
           </a>
