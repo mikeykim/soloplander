@@ -103,6 +103,20 @@ export const solopreneursData: ISolopreneur[] = [
     }
   },
   {
+    name: "Richard Lim",
+    region: "Asia",
+    image: "/images/richard-lim.png",
+    gender: "male",
+    description: "A Creator helps people learn DATA/AI in an engaging way while empowering them to use it meaningfully",
+    links: {
+      linkedin: "https://www.linkedin.com/in/datarichard/",
+      website: "http://datarichard.simple.ink/",
+      previews: {
+        linkedin: "/images/previews/linkedin/richard-lim-linkedin.png"
+      }
+    }
+  },
+  {
     name: "Wes Mcdowell",
     region: "USA",
     image: "/images/wes-mcdowell.jpg",
