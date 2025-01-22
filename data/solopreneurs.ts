@@ -112,7 +112,8 @@ export const solopreneursData: ISolopreneur[] = [
       linkedin: "https://www.linkedin.com/in/datarichard/",
       website: "http://datarichard.simple.ink/",
       previews: {
-        linkedin: "/images/previews/linkedin/richard-lim-linkedin.png"
+        linkedin: "/images/previews/linkedin/richard-lim-linkedin.png",
+        website: "/images/previews/website/datarichard.simple.ink.png"
       }
     }
   },

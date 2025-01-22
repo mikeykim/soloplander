@@ -16,8 +16,10 @@ export async function GET(request: Request) {
     const isFlutterApp = html.includes('flutter.js') || html.includes('_flutter')
     // LinkedIn 프로필인지 확인
     const isLinkedIn = url.includes('linkedin.com')
+    // Simple.ink 웹사이트인지 확인
+    const isSimpleInk = url.includes('simple.ink')
     
-    if (isFlutterApp || isLinkedIn) {
+    if (isFlutterApp || isLinkedIn || isSimpleInk) {
       return new NextResponse(
         `<html>
           <head>
@@ -56,6 +58,7 @@ export async function GET(request: Request) {
     const modifiedHtml = html.replace(
       /<head>/i,
       `<head>
+        <base href="${url}" />
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <style>
           html, body {
@@ -73,6 +76,10 @@ export async function GET(request: Request) {
           img {
             max-width: 100%;
             height: auto;
+          }
+          /* simple.ink 관련 스타일 수정 */
+          #veluga-plugin-container {
+            display: none !important;
           }
         </style>
         ${isFlutterApp ? `
@@ -107,7 +114,16 @@ export async function GET(request: Request) {
         'Content-Type': 'text/html',
         'Access-Control-Allow-Origin': '*',
         'X-Frame-Options': 'SAMEORIGIN',
-        'Content-Security-Policy': "default-src 'self' 'unsafe-inline' 'unsafe-eval' data: blob: *"
+        'Content-Security-Policy': `
+          default-src * 'unsafe-inline' 'unsafe-eval' data: blob:;
+          style-src * 'self' 'unsafe-inline' https: http:;
+          style-src-elem * 'self' 'unsafe-inline' https: http:;
+          font-src * data: https: http:;
+          img-src * data: blob: https: http:;
+          script-src * 'self' 'unsafe-inline' 'unsafe-eval';
+          frame-ancestors *;
+        `.replace(/\s+/g, ' ').trim(),
+        'Permissions-Policy': 'interest-cohort=()'
       }
     })
   } catch (error) {

@@ -168,7 +168,7 @@ export default function SolopreneurCard({ solopreneur, isFirst }: Props) {
                 backgroundColor: 'white',
                 minHeight: '400px'
               }}
-              sandbox="allow-same-origin allow-scripts allow-popups allow-forms allow-presentation"
+              sandbox="allow-scripts allow-same-origin allow-popups allow-forms"
               loading="lazy"
               referrerPolicy="no-referrer"
               onLoad={(e) => {
