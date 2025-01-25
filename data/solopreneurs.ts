@@ -332,4 +332,61 @@ export const solopreneursData: ISolopreneur[] = [
       }
     }
   },
+  {
+    name: "Edmund Yong",
+    region: "Asia",
+    image: "/images/edmund-yong.png",
+    gender: "male",
+    description: "A Korean solopreneur sharing his startup journey and inspiring others through his content.",
+    links: {
+      youtube: "https://www.youtube.com/@edmundyong",
+      previews: {
+        youtube: "/images/previews/youtube/edmund-yong-youtube.png"
+      }
+    }
+  },
+  {
+    name: "Takashii",
+    region: "Asia",
+    image: "/images/takashii.png",
+    gender: "male",
+    description: "A Japanese solopreneur sharing his experiences and insights to inspire and connect with others through his content.",
+    links: {
+      youtube: "https://www.youtube.com/@takashiifromjapan",
+      website: "https://takashifromjapan.com/tokyocompleteguide",
+      previews: {
+        youtube: "/images/previews/youtube/takashii-youtube.png"
+      }
+    }
+  },
+  {
+    name: "Layla Pomper",
+    region: "USA",
+    image: "/images/layla-pomper.png",
+    gender: "female",
+    description: "A solopreneur who is passionate about helping others achieve their goals through her content.",
+    links: {
+      youtube: "https://www.youtube.com/@LaylaPomper",
+      website: "processdriven.co/free-process-audit-youtube",
+      linkedin: "https://www.linkedin.com/in/laylapomper/",
+      previews: {
+        youtube: "/images/previews/youtube/layla-pomper-youtube.png",
+        linkedin: "/images/previews/linkedin/layla-pomper-linkedin.png"
+      }
+    }
+  },
+  {
+    name: "William Rossy",
+    region: "USA",
+    image: "/images/william-rossy.png",
+    gender: "male",
+    description: "Inspires meaningful living through tools, insights, and transformative experiences.",
+    links: {
+      youtube: "https://www.youtube.com/@Sprouht",
+      website: "https://sprouht.com/",
+      previews: {
+        youtube: "/images/previews/youtube/william-rossy-youtube.png",
+      }
+    }
+  },
 ] 
