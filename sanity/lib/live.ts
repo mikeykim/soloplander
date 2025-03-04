@@ -9,9 +9,13 @@ export const sanityFetch = async (query: string, params?: any) => {
   return client.fetch(query, params);
 };
 
-// 더미 컴포넌트 - 에러가 나지 않도록 하기 위함
-export const SanityLive = ({ children }: { children: React.ReactNode }) => {
-  return <>{children}</>;
+// 더미 컴포넌트 - JSX 없이 구현
+export const SanityLive = {
+  // 컴포넌트 대신 객체로 대체
+  __esModule: true,
+  default: function DummySanityLive() {
+    return null; // 아무것도 렌더링하지 않음
+  }
 };
 
 // 주석 처리된 원래 코드
