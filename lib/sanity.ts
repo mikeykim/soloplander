@@ -3,9 +3,9 @@ import imageUrlBuilder from '@sanity/image-url';
 import { apiVersion, dataset, projectId, useCdn } from '@/sanity/env';
 
 export const client = createClient({
-  projectId: 'eqkm480h',
-  dataset: 'production',
-  apiVersion: '2023-05-03',
+  projectId,
+  dataset,
+  apiVersion,
   useCdn: true,
   perspective: 'published'
 });
