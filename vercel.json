@@ -2,5 +2,10 @@
   "version": 2,
   "buildCommand": "npm run build",
   "installCommand": "npm install --ignore-scripts",
-  "framework": "nextjs"
+  "framework": "nextjs",
+  "build": {
+    "env": {
+      "VERCEL_FORCE_NO_BUILD_CACHE": "1"
+    }
+  }
 } 

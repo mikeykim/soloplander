@@ -10,6 +10,18 @@ export const metadata: Metadata = {
   description: 'Read the latest insights and stories from successful solopreneurs around the world.'
 };
 
+// 블로그 포스트 인터페이스 정의
+interface IPost {
+  _id: string;
+  title: string;
+  slug: string;
+  excerpt: string;
+  coverImage: string;
+  publishedAt: string;
+  author: string;
+  tags: string[];
+}
+
 async function getPosts() {
   const query = `*[_type == "post"] | order(publishedAt desc) {
     _id,
@@ -55,7 +67,7 @@ export default async function BlogPage() {
 
       {posts.length > 0 ? (
         <section className={styles.postsGrid}>
-          {posts.map(post => (
+          {posts.map((post: IPost) => (
             <Link 
               href={`/blog/${post.slug}`}
               className={styles.blogPostCard}

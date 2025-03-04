@@ -6,16 +6,14 @@
 
 import {visionTool} from '@sanity/vision'
 import {defineConfig} from 'sanity'
-import {structureTool} from 'sanity/structure'
 import {deskTool} from 'sanity/desk'
 import {media} from 'sanity-plugin-media'
-import {vercelDeployTool} from 'sanity-plugin-vercel-deploy'
+// import {vercelDeployTool} from 'sanity-plugin-vercel-deploy'
 import {schemaTypes} from './sanity/schemas'
 import {structure} from './sanity/structure'
 
 // Go to https://www.sanity.io/docs/api-versioning to learn how API versioning works
 import {apiVersion, dataset, projectId} from './sanity/env'
-import {schema} from './sanity/schemaTypes'
 
 export default defineConfig({
   name: 'default',
@@ -27,11 +25,11 @@ export default defineConfig({
     types: schemaTypes,
   },
   plugins: [
-    structureTool({structure}),
+    deskTool({structure}),
     // Vision is for querying with GROQ from inside the Studio
     // https://www.sanity.io/docs/the-vision-plugin
     visionTool(),
     media(),
-    vercelDeployTool()
+    // vercelDeployTool(),
   ],
 })
