@@ -73,7 +73,7 @@ export default defineType({
       name: 'featured',
       title: 'Featured',
       type: 'boolean',
-      default: false
+      initialValue: false
     }
   ],
   preview: {
