@@ -123,7 +123,9 @@ export async function generateStaticParams() {
     }
   });
   
-  return Array.from(allTags).map(tag => ({
-    tag: encodeURIComponent(tag),
-  }));
+  return Array.from(allTags)
+    .filter(tag => tag && tag.trim().length > 0)
+    .map(tag => ({
+      tag: encodeURIComponent(tag),
+    }));
 } 
