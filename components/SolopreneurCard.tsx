@@ -207,7 +207,7 @@ export default function SolopreneurCard({ solopreneur, isFirst }: Props) {
   };
 
   const getLinksText = (links: ISolopreneur['links']) => {
-    const platforms = [];
+    const platforms: string[] = [];
     if (links.youtube) platforms.push('YouTube');
     if (links.twitter) platforms.push('X');
     if (links.website) platforms.push('website');
@@ -226,7 +226,7 @@ export default function SolopreneurCard({ solopreneur, isFirst }: Props) {
   };
 
   const renderLinks = () => {
-    const availableLinks = []
+    const availableLinks: string[] = []
     if (solopreneur.links.youtube) availableLinks.push('YouTube')
     if (solopreneur.links.twitter) availableLinks.push('X')
     if (solopreneur.links.website) availableLinks.push('website')
