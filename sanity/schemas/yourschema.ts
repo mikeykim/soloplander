@@ -1,0 +1,1 @@
+validation: (Rule: any) => Rule.required()

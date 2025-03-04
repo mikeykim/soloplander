@@ -6,7 +6,11 @@ import { SpeedInsights } from "@vercel/speed-insights/next"
 import type { Metadata } from 'next'
 import Script from 'next/script'
 
-const inter = Inter({ subsets: ['latin'] })
+// Inter 폰트 로컬로 최적화하여 사용
+const inter = Inter({ 
+  subsets: ['latin'],
+  display: 'swap'
+})
 
 export const metadata: Metadata = {
   title: 'SolopLander | Empowering Solopreneurs Worldwide',
