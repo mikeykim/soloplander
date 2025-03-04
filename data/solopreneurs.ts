@@ -388,5 +388,5 @@ export const solopreneursData: ISolopreneur[] = [
         youtube: "/images/previews/youtube/william-rossy-youtube.png",
       }
     }
-  },
+  }
 ] 

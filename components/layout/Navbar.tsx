@@ -12,11 +12,15 @@ export default function Navbar() {
           <Image
             src="/logo.png"
             alt="SolopLander"
-            width={240}
-            height={60}
+            width={180}
+            height={45}
             priority
           />
         </Link>
+        <div className={styles.navLinks}>
+          <Link href="/">Home</Link>
+          <Link href="/blog">Blog</Link>
+        </div>
       </div>
     </nav>
   )

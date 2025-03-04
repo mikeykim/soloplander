@@ -1,0 +1,28 @@
+.imageContainer {
+  margin: 2rem 0;
+  text-align: center;
+}
+
+.image {
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  max-width: 100%;
+  height: auto;
+}
+
+.caption {
+  text-align: center;
+  color: #6a6e6b;
+  font-size: 0.9rem;
+  margin-top: 0.5rem;
+}
+
+.link {
+  color: var(--primary);
+  text-decoration: underline;
+  transition: color 0.3s;
+}
+
+.link:hover {
+  color: var(--hover);
+} 

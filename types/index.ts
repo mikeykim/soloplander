@@ -1,5 +1,22 @@
 export type RegionType = 'USA' | 'Europe' | 'Asia';
 
+export interface IBlogPost {
+  id: string;
+  title: string;
+  slug: string;
+  content: string;
+  excerpt: string;
+  coverImage: string;
+  publishedAt: string;
+  updatedAt?: string;
+  author: {
+    name: string;
+    image?: string;
+  };
+  tags: string[];
+  featured: boolean;
+}
+
 export interface ISolopreneur {
   name: string;
   region: RegionType;

@@ -1,0 +1,157 @@
+.container {
+  padding: 3rem 2rem;
+  background-color: var(--white);
+  min-height: calc(100vh - 160px);
+}
+
+.title {
+  font-size: 2.5rem;
+  color: var(--primary);
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+/* 특집 게시물 스타일 */
+.featuredSection {
+  margin-bottom: 3rem;
+}
+
+.featuredPost {
+  display: block;
+  text-decoration: none;
+  color: inherit;
+  background: white;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.featuredPost:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+}
+
+.featuredImageContainer {
+  width: 100%;
+  height: 400px;
+  position: relative;
+  overflow: hidden;
+}
+
+.featuredImage {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.3s ease;
+}
+
+.featuredPost:hover .featuredImage {
+  transform: scale(1.05);
+}
+
+.featuredContent {
+  padding: 1.5rem;
+}
+
+.featuredContent h2 {
+  font-size: 1.8rem;
+  color: var(--primary);
+  margin-bottom: 0.75rem;
+}
+
+.featuredContent p {
+  color: #5C5C5C;
+  line-height: 1.6;
+  margin-bottom: 1rem;
+}
+
+/* 일반 게시물 그리드 */
+.postsGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 2rem;
+  max-width: 1140px;
+  margin: 0 auto;
+}
+
+.postCard {
+  display: block;
+  text-decoration: none;
+  color: inherit;
+  background: white;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  height: 100%;
+}
+
+.postCard:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+}
+
+.postImageContainer {
+  width: 100%;
+  height: 200px;
+  position: relative;
+  overflow: hidden;
+}
+
+.postImage {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.3s ease;
+}
+
+.postCard:hover .postImage {
+  transform: scale(1.05);
+}
+
+.postContent {
+  padding: 1.2rem;
+}
+
+.postContent h3 {
+  font-size: 1.3rem;
+  color: var(--primary);
+  margin-bottom: 0.5rem;
+}
+
+.postContent p {
+  color: #5C5C5C;
+  line-height: 1.5;
+  margin-bottom: 1rem;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.postMeta {
+  color: #6a6e6b;
+  font-size: 0.9rem;
+}
+
+/* 반응형 */
+@media (max-width: 1024px) {
+  .postsGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .postsGrid {
+    grid-template-columns: 1fr;
+  }
+  
+  .featuredImageContainer {
+    height: 250px;
+  }
+  
+  .featuredContent h2 {
+    font-size: 1.5rem;
+  }
+} 
