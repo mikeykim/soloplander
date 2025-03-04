@@ -18,10 +18,11 @@ export default function Footer() {
       <div className={styles.container}>
         <Link href="/" className={styles.logo}>
           <Image
-            src="/logo.png"
-            alt="SolopLander"
-            width={180}
-            height={45}
+            src="/images/logo.png"
+            alt="SolopLander Logo"
+            width={110}
+            height={28}
+            className={styles.logo}
           />
         </Link>
         <div className={styles.socialLinks}>

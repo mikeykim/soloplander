@@ -1,83 +1,186 @@
 .container {
   max-width: 800px;
   margin: 0 auto;
-  padding: 3rem 2rem;
-  background-color: var(--white);
+  padding: 2rem;
 }
 
-.header {
+.backLink {
+  display: inline-block;
   margin-bottom: 2rem;
+  color: #555;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.backLink:hover {
+  color: #000;
+  text-decoration: underline;
 }
 
 .title {
   font-size: 2.5rem;
-  color: var(--primary);
   margin-bottom: 1rem;
+  line-height: 1.2;
 }
 
 .meta {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  color: #6a6e6b;
+  color: #666;
+  margin-bottom: 2rem;
   font-size: 0.9rem;
 }
 
-.author {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-}
-
-.authorImage {
-  border-radius: 50%;
-}
-
 .coverImageContainer {
+  position: relative;
+  width: 100%;
+  height: 400px;
   margin-bottom: 2rem;
-  border-radius: 12px;
+  border-radius: 8px;
   overflow: hidden;
 }
 
 .coverImage {
-  width: 100%;
-  height: auto;
   object-fit: cover;
 }
 
 .content {
   font-size: 1.1rem;
-  line-height: 1.8;
+  line-height: 1.7;
   color: #333;
-}
-
-.content h1, .content h2, .content h3 {
-  color: var(--primary);
-  margin: 1.5rem 0 1rem;
 }
 
 .content p {
   margin-bottom: 1.5rem;
 }
 
-.navigation {
-  margin-top: 3rem;
-  padding-top: 1.5rem;
-  border-top: 1px solid #eaeaea;
+.content h2 {
+  font-size: 1.8rem;
+  margin: 2rem 0 1rem;
 }
 
-.backLink {
-  display: inline-block;
-  color: var(--primary);
+.content h3 {
+  font-size: 1.5rem;
+  margin: 1.5rem 0 1rem;
+}
+
+.content ul, .content ol {
+  margin-bottom: 1.5rem;
+  padding-left: 1.5rem;
+}
+
+.content li {
+  margin-bottom: 0.5rem;
+}
+
+.content a {
+  color: #0070f3;
   text-decoration: none;
+}
+
+.content a:hover {
+  text-decoration: underline;
+}
+
+/* 태그 스타일 */
+.tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin: 2rem 0;
+}
+
+.tag {
+  display: inline-block;
+  padding: 0.3rem 0.8rem;
+  background-color: #f0f0f0;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  color: #555;
+  text-decoration: none;
+  transition: background-color 0.2s, color 0.2s;
+}
+
+.tag:hover {
+  background-color: #e0e0e0;
+  color: #333;
+}
+
+.tag strong {
+  color: #0070f3;
+  font-weight: 600;
+}
+
+/* 구분선 */
+.divider {
+  margin: 2.5rem 0;
+  border: none;
+  height: 1px;
+  background-color: #eaeaea;
+}
+
+/* 관련 게시물 섹션 */
+.relatedPosts {
+  margin-top: 2rem;
+}
+
+.relatedTitle {
+  font-size: 1.5rem;
+  margin-bottom: 1.5rem;
+  font-weight: 600;
+}
+
+.relatedGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.5rem;
+}
+
+.relatedCard {
+  display: flex;
+  flex-direction: column;
+  text-decoration: none;
+  color: inherit;
+  background: white;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.relatedCard:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+}
+
+.relatedImageContainer {
+  position: relative;
+  height: 160px;
+  overflow: hidden;
+}
+
+.relatedImage {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.relatedContent {
+  padding: 1rem;
+}
+
+.relatedPostTitle {
+  font-size: 1rem;
+  margin: 0 0 0.5rem 0;
   font-weight: 500;
-  transition: color 0.3s;
+  line-height: 1.4;
 }
 
-.backLink:hover {
-  color: var(--hover);
+.relatedPostMeta {
+  font-size: 0.8rem;
+  color: #666;
+  margin: 0;
 }
 
+/* 반응형 디자인 */
 @media (max-width: 768px) {
   .container {
     padding: 2rem 1.5rem;
@@ -89,5 +192,15 @@
   
   .content {
     font-size: 1rem;
+  }
+  
+  .relatedGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 480px) {
+  .relatedGrid {
+    grid-template-columns: 1fr;
   }
 } 

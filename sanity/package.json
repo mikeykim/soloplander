@@ -9,18 +9,23 @@
     "start": "sanity start",
     "build": "sanity build",
     "deploy": "sanity deploy",
-    "deploy-graphql": "sanity graphql deploy"
+    "deploy-graphql": "sanity graphql deploy",
+    "upgrade": "sanity upgrade",
+    "check": "sanity doctor"
   },
   "keywords": [
     "sanity"
   ],
   "dependencies": {
-    "@sanity/vision": "^3.23.4",
+    "@portabletext/react": "^3.2.1",
+    "@sanity/vision": "^3.77.2",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-is": "^18.2.0",
-    "sanity": "^3.23.4",
-    "styled-components": "^6.0.7"
+    "sanity": "^3.77.2",
+    "sanity-plugin-media": "^2.3.2",
+    "sanity-plugin-vercel-deploy": "^3.3.4",
+    "styled-components": "^6.1.15"
   },
   "devDependencies": {
     "@sanity/eslint-config-studio": "^3.0.1",
@@ -28,4 +33,4 @@
     "prettier": "^3.0.2",
     "typescript": "^5.1.6"
   }
-} 
+}

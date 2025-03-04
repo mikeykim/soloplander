@@ -1,7 +1,16 @@
-export default {
+import { defineField, defineType } from 'sanity'
+
+export default defineType({
   name: 'post',
   title: 'Post',
   type: 'document',
+  fieldsets: [
+    {
+      name: 'imageOptions',
+      title: 'Image Options',
+      options: { collapsible: true, collapsed: true }
+    }
+  ],
   fields: [
     {
       name: 'title',
@@ -52,63 +61,7 @@ export default {
       name: 'content',
       title: 'Content',
       type: 'array',
-      of: [
-        {
-          type: 'block',
-          styles: [
-            {title: 'Normal', value: 'normal'},
-            {title: 'H1', value: 'h1'},
-            {title: 'H2', value: 'h2'},
-            {title: 'H3', value: 'h3'},
-            {title: 'Quote', value: 'blockquote'}
-          ],
-          marks: {
-            decorators: [
-              {title: 'Strong', value: 'strong'},
-              {title: 'Emphasis', value: 'em'},
-              {title: 'Code', value: 'code'}
-            ],
-            annotations: [
-              {
-                name: 'link',
-                type: 'object',
-                title: 'Link',
-                fields: [
-                  {
-                    name: 'href',
-                    type: 'url',
-                    title: 'URL'
-                  }
-                ]
-              }
-            ]
-          }
-        },
-        {
-          type: 'image',
-          options: {
-            hotspot: true
-          },
-          fields: [
-            {
-              name: 'caption',
-              type: 'string',
-              title: 'Caption',
-              options: {
-                isHighlighted: true
-              }
-            },
-            {
-              name: 'alt',
-              type: 'string',
-              title: 'Alternative text',
-              options: {
-                isHighlighted: true
-              }
-            }
-          ]
-        }
-      ]
+      of: [{ type: 'block' }, { type: 'image' }]
     },
     {
       name: 'tags',
@@ -134,4 +87,4 @@ export default {
       return {...selection, subtitle: author && `by ${author}`};
     }
   }
-} 
+}) 

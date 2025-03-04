@@ -27,7 +27,22 @@ a {
   --white: #FFFFFF;
   --text: #333333;
   --hover: #B5CC1A;
-} 
+  --card-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  --card-shadow-hover: 0 8px 24px rgba(0, 0, 0, 0.15);
+  --card-transition: transform 0.3s ease, box-shadow 0.3s ease;
+  --card-border-radius: 12px;
+  --content-text-color: #5C5C5C;
+  --meta-text-color: #6a6e6b;
+  --font-sans: 'Pretendard Variable', -apple-system, BlinkMacSystemFont, system-ui, Roboto, 'Helvetica Neue', 'Segoe UI', 'Apple SD Gothic Neo', 'Noto Sans KR', 'Malgun Gothic', sans-serif;
+}
+
+html {
+  font-family: var(--font-sans);
+}
+
+body {
+  font-family: var(--font-sans);
+}
 
 main {
   flex: 1;

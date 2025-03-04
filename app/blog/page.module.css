@@ -1,40 +1,89 @@
+/* 
+ * 블로그 페이지 스타일
+ * 구조: 컨테이너 > 헤더 섹션 > 특집 게시물 > 게시물 그리드
+ */
+
+/* :root 대신 클래스 선택자 사용 */
 .container {
-  padding: 3rem 2rem;
+  /* 변수 정의 */
+  --card-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  --card-shadow-hover: 0 8px 24px rgba(0, 0, 0, 0.15);
+  --card-transition: transform 0.3s ease, box-shadow 0.3s ease;
+  --card-border-radius: 12px;
+  --content-text-color: #5C5C5C;
+  --meta-text-color: #6a6e6b;
+  
+  /* 기존 컨테이너 스타일 유지 */
+  padding: 3rem 3%;
   background-color: var(--white);
   min-height: calc(100vh - 160px);
+  width: 94%;
+  max-width: 1600px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+/* 헤더 섹션 */
+.headerSection {
+  max-width: 600px;
+  margin-bottom: 3rem;
+  margin-left: 8px;
+  padding-left: 10px;
+  text-align: left;
+  align-self: flex-start;
 }
 
 .title {
   font-size: 2.5rem;
-  color: var(--primary);
-  text-align: center;
-  margin-bottom: 2rem;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+  text-align: left;
 }
 
-/* 특집 게시물 스타일 */
+.description {
+  font-size: 1.1rem;
+  color: var(--text-secondary);
+  margin-bottom: 2rem;
+  text-align: left !important;
+  line-height: 1.6;
+  max-width: 500px;
+}
+
+/* 특집 게시물 */
 .featuredSection {
-  margin-bottom: 3rem;
+  margin-bottom: 2rem;
+  width: 100%;
+  max-width: 650px;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .featuredPost {
-  display: block;
+  display: flex;
+  flex-direction: column;
   text-decoration: none;
   color: inherit;
   background: white;
-  border-radius: 12px;
+  border-radius: 6px;
   overflow: hidden;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  transition: transform 0.2s ease, box-shadow 0.2s ease, opacity 0.2s ease;
+  border: 1px solid #f0f0f0;
+  opacity: 0.97;
 }
 
 .featuredPost:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+  transform: translateY(-3px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  border-color: #e0e0e0;
+  opacity: 1;
 }
 
 .featuredImageContainer {
+  height: 250px;
   width: 100%;
-  height: 400px;
   position: relative;
   overflow: hidden;
 }
@@ -51,107 +100,197 @@
 }
 
 .featuredContent {
-  padding: 1.5rem;
+  padding: 1.2rem;
+  display: flex;
+  flex-direction: column;
 }
 
 .featuredContent h2 {
-  font-size: 1.8rem;
+  font-size: 1.3rem;
   color: var(--primary);
-  margin-bottom: 0.75rem;
+  margin-bottom: 0.5rem;
 }
 
 .featuredContent p {
   color: #5C5C5C;
-  line-height: 1.6;
-  margin-bottom: 1rem;
+  line-height: 1.5;
+  margin-bottom: 0.7rem;
+  font-size: 0.85rem;
 }
 
-/* 일반 게시물 그리드 */
+/* 일반 게시물 그리드 - 더 작은 카드 */
 .postsGrid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 2rem;
-  max-width: 1140px;
-  margin: 0 auto;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0.8rem;
+  width: 100%;
 }
 
-.postCard {
-  display: block;
+/* 블로그 포스트 카드 - 크기 추가 축소 */
+.blogPostCard {
+  display: flex;
+  flex-direction: column;
   text-decoration: none;
   color: inherit;
   background: white;
-  border-radius: 12px;
+  border-radius: 6px;
   overflow: hidden;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  transition: transform 0.2s ease, box-shadow 0.2s ease, opacity 0.2s ease;
   height: 100%;
+  max-width: 100%;
+  border: 1px solid #f0f0f0;
+  opacity: 0.97;
 }
 
-.postCard:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+.blogPostCard:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  border-color: #e0e0e0;
+  opacity: 1;
 }
 
-.postImageContainer {
+/* 블로그 이미지 컨테이너 - 높이 더 줄이기 */
+.blogPostImageContainer {
+  height: 100px;
   width: 100%;
-  height: 200px;
   position: relative;
   overflow: hidden;
 }
 
-.postImage {
+/* 콘텐츠 영역 - 패딩 더 줄이기 */
+.postContent {
+  padding: 0.6rem;
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+}
+
+/* 제목 크기 더 줄이기 */
+.postTitle {
+  font-size: 0.8rem;
+  font-weight: 600;
+  margin-bottom: 0.25rem;
+  line-height: 1.3;
+}
+
+/* 설명 텍스트 크기 더 줄이기 */
+.postExcerpt {
+  font-size: 0.7rem;
+  color: var(--content-text-color);
+  margin-bottom: 0.5rem;
+  line-height: 1.3;
+  flex-grow: 1;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* 메타 정보 크기 더 줄이기 */
+.postMeta {
+  color: #6a6e6b;
+  font-size: 0.65rem;
+}
+
+/* 반응형 디자인 업데이트 */
+@media (max-width: 1400px) {
+  .postsGrid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (max-width: 1000px) {
+  .postsGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 600px) {
+  .postsGrid {
+    grid-template-columns: 1fr;
+  }
+  
+  .blogPostImageContainer {
+    height: 160px;
+  }
+}
+
+/* 포커스 스타일 추가 */
+.blogPostCard:focus, .featuredPost:focus, .relatedCard:focus {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+}
+
+/* 스크린 리더용 텍스트 */
+.srOnly {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
+/* 이미지 컨테이너 공통 스타일 */
+.blogPostImageContainer, .featuredImageContainer, .relatedImageContainer {
+  width: 100%;
+  position: relative;
+  overflow: hidden;
+}
+
+/* 이미지 공통 스타일 */
+.postImage, .featuredImage, .relatedImage {
   width: 100%;
   height: 100%;
   object-fit: cover;
   transition: transform 0.3s ease;
 }
 
-.postCard:hover .postImage {
-  transform: scale(1.05);
+/* 관련 게시물 */
+.relatedSection {
+  margin-top: 3rem;
+  width: 100%;
 }
 
-.postContent {
-  padding: 1.2rem;
+.relatedGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.5rem;
+  width: 100%;
 }
 
-.postContent h3 {
-  font-size: 1.3rem;
-  color: var(--primary);
-  margin-bottom: 0.5rem;
+.relatedCard {
+  display: flex;
+  flex-direction: column;
+  text-decoration: none;
+  color: inherit;
+  background: white;
+  border-radius: var(--card-border-radius);
+  overflow: hidden;
+  box-shadow: var(--card-shadow);
+  transition: var(--card-transition);
+  height: 100%;
 }
 
-.postContent p {
-  color: #5C5C5C;
-  line-height: 1.5;
-  margin-bottom: 1rem;
-  display: -webkit-box;
-  -webkit-line-clamp: 3;
-  -webkit-box-orient: vertical;
+.relatedImageContainer {
+  height: 150px;
+  position: relative;
   overflow: hidden;
 }
 
-.postMeta {
-  color: #6a6e6b;
-  font-size: 0.9rem;
-}
-
-/* 반응형 */
-@media (max-width: 1024px) {
-  .postsGrid {
+/* 반응형 디자인 */
+@media (max-width: 1200px) {
+  .relatedGrid {
     grid-template-columns: repeat(2, 1fr);
   }
 }
 
 @media (max-width: 768px) {
-  .postsGrid {
+  .relatedGrid {
     grid-template-columns: 1fr;
   }
-  
-  .featuredImageContainer {
-    height: 250px;
-  }
-  
-  .featuredContent h2 {
-    font-size: 1.5rem;
-  }
-} 
+}

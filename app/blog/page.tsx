@@ -1,8 +1,9 @@
 import { Metadata } from 'next';
 import Image from 'next/image';
 import Link from 'next/link';
-import { client, urlFor } from '@/lib/sanity';
+import { client } from '@/lib/sanity';
 import styles from './page.module.css';
+import { formatDate } from '@/utils/dateFormatter';
 
 export const metadata: Metadata = {
   title: 'Blog | SolopLander',
@@ -10,105 +11,80 @@ export const metadata: Metadata = {
 };
 
 async function getPosts() {
-  return await client.fetch(`
-    *[_type == "post"] | order(publishedAt desc) {
-      _id,
-      title,
-      "slug": slug.current,
-      excerpt,
-      coverImage,
-      publishedAt,
-      "author": author->{name, image},
-      tags,
-      featured
-    }
-  `);
+  const query = `*[_type == "post"] | order(publishedAt desc) {
+    _id,
+    title,
+    "slug": slug.current,
+    excerpt,
+    "coverImage": coverImage.asset->url,
+    publishedAt,
+    "author": author->name,
+    "tags": tags,
+    _createdAt,
+    _updatedAt
+  }`;
+  
+  const posts = await client.fetch(query);
+  return posts;
 }
 
 export default async function BlogPage() {
   const posts = await getPosts();
   
-  // 특집 게시물 찾기
-  const featuredPost = posts.find((post: any) => post.featured);
-  // 나머지 게시물
-  const regularPosts = posts.filter((post: any) => !post.featured);
-  
+  if (!posts || posts.length === 0) {
+    return (
+      <div className={styles.container}>
+        <section className={styles.headerSection}>
+          <h1 className={styles.title}>Blog</h1>
+          <p className={styles.description}>
+            No posts available at the moment. Check back soon!
+          </p>
+        </section>
+      </div>
+    );
+  }
+
   return (
     <div className={styles.container}>
-      <h1 className={styles.title}>SolopLander Blog</h1>
-      
-      {/* 특집 게시물 */}
-      {featuredPost && (
-        <div className={styles.featuredSection}>
-          <Link href={`/blog/${featuredPost.slug}`} className={styles.featuredPost}>
-            <div className={styles.featuredImageContainer}>
-              <Image 
-                src={urlFor(featuredPost.coverImage).width(800).height(400).url()} 
-                alt={featuredPost.title}
-                width={800}
-                height={400}
-                className={styles.featuredImage}
-              />
-            </div>
-            <div className={styles.featuredContent}>
-              <h2>{featuredPost.title}</h2>
-              <p>{featuredPost.excerpt}</p>
-              <div className={styles.postMeta}>
-                <time>{new Date(featuredPost.publishedAt).toLocaleDateString()}</time>
-                <div className={styles.tags}>
-                  {featuredPost.tags && featuredPost.tags.map((tag: string) => (
-                    <Link 
-                      href={`/blog/category/${encodeURIComponent(tag)}`} 
-                      key={tag} 
-                      className={styles.tag}
-                    >
-                      {tag}
-                    </Link>
-                  ))}
+      <section className={styles.headerSection}>
+        <h1 className={styles.title}>Blog</h1>
+        <p className={styles.description}>
+          Insights, strategies, and resources for solopreneurs and small business owners.
+        </p>
+      </section>
+
+      {posts.length > 0 ? (
+        <section className={styles.postsGrid}>
+          {posts.map(post => (
+            <Link 
+              href={`/blog/${post.slug}`}
+              className={styles.blogPostCard}
+              key={post._id}
+            >
+              <div className={styles.blogPostImageContainer}>
+                {post.coverImage && (
+                  <Image
+                    src={post.coverImage}
+                    alt={post.title}
+                    fill
+                    className={styles.postImage}
+                  />
+                )}
+              </div>
+              <div className={styles.postContent}>
+                <h3 className={styles.postTitle}>{post.title}</h3>
+                <p className={styles.postExcerpt}>{post.excerpt}</p>
+                <div className={styles.postMeta}>
+                  {post.publishedAt && formatDate(post.publishedAt)}
+                  {post.author && ` • By ${post.author}`}
                 </div>
               </div>
-            </div>
-          </Link>
-        </div>
+            </Link>
+          ))}
+        </section>
+      ) : (
+        <p className={styles.noPostsMessage}>No posts available.</p>
       )}
-      
-      {/* 모든 게시물 */}
-      <div className={styles.postsGrid}>
-        {regularPosts.map((post: any) => (
-          <Link href={`/blog/${post.slug}`} key={post._id} className={styles.postCard}>
-            <div className={styles.postImageContainer}>
-              <Image 
-                src={urlFor(post.coverImage).width(400).height(225).url()} 
-                alt={post.title}
-                width={400}
-                height={225}
-                className={styles.postImage}
-              />
-            </div>
-            <div className={styles.postContent}>
-              <h3>{post.title}</h3>
-              <p>{post.excerpt}</p>
-              <div className={styles.postMeta}>
-                <time>{new Date(post.publishedAt).toLocaleDateString()}</time>
-                <div className={styles.tags}>
-                  {post.tags && post.tags.slice(0, 2).map((tag: string) => (
-                    <Link 
-                      href={`/blog/category/${encodeURIComponent(tag)}`} 
-                      key={tag} 
-                      className={styles.tag}
-                    >
-                      {tag}
-                    </Link>
-                  ))}
-                  {post.tags && post.tags.length > 2 && (
-                    <span className={styles.moreTag}>+{post.tags.length - 2}</span>
-                  )}
-                </div>
-              </div>
-            </div>
-          </Link>
-        ))}
-      </div>
     </div>
   );
 } 

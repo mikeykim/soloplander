@@ -2,6 +2,9 @@ import {defineConfig} from 'sanity'
 import {deskTool} from 'sanity/desk'
 import {visionTool} from '@sanity/vision'
 import {schemaTypes} from './schemaTypes'
+import {media} from 'sanity-plugin-media'
+import {vercelDeployTool} from 'sanity-plugin-vercel-deploy'
+import {structure} from './structure'
 
 export default defineConfig({
   name: 'default',
@@ -11,9 +14,20 @@ export default defineConfig({
   projectId: 'eqkm480h',
   dataset: 'production',
 
-  plugins: [deskTool(), visionTool()],
+  plugins: [
+    deskTool({structure}),
+    visionTool(),
+    media(),
+    vercelDeployTool()
+  ],
 
   schema: {
     types: schemaTypes,
   },
+
+  studio: {
+    components: {
+      // 커스텀 컴포넌트가 있다면 여기에 추가
+    }
+  }
 })
