@@ -1,8 +1,12 @@
+/// <reference types="@sanity/client" />
+/// <reference types="next-sanity" />
+
 import { Metadata } from 'next';
 import Image from 'next/image';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { client, urlFor } from '@/lib/sanity';
+import { fetchSanity } from '@/lib/sanity-helpers';
 import styles from '../../page.module.css';
 
 interface PageProps {
@@ -12,8 +16,7 @@ interface PageProps {
 }
 
 async function getPostsByTag(tag: string) {
-  // @ts-ignore - 타입 에러 무시 (실행에는 영향 없음)
-  return await client.fetch(`
+  return fetchSanity(`
     *[_type == "post" && $tag in tags] | order(publishedAt desc) {
       _id,
       title,
