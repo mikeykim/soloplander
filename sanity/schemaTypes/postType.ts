@@ -117,7 +117,6 @@ export const postType = defineType({
       name: 'featured',
       title: 'Featured',
       type: 'boolean',
-      default: false
     })
   ],
   preview: {
