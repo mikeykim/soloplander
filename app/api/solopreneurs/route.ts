@@ -49,8 +49,17 @@ const tempSolopreneurs = [
   }
 ];
 
+// 환경 변수 설정 여부 확인
+const isSupabaseConfigured = process.env.NEXT_PUBLIC_SUPABASE_URL && process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+
 export async function GET() {
   console.log('GET /api/solopreneurs 요청 받음');
+  
+  // 환경 변수가 설정되지 않은 경우 즉시 임시 데이터 반환
+  if (!isSupabaseConfigured) {
+    console.warn('Supabase 환경 변수가 설정되지 않았습니다. 임시 데이터를 사용합니다.');
+    return NextResponse.json({ solopreneurs: tempSolopreneurs });
+  }
   
   try {
     // Supabase 연결 테스트
@@ -125,6 +134,15 @@ export async function GET() {
 
 export async function POST(request: NextRequest) {
   console.log('POST /api/solopreneurs 요청 받음');
+  
+  // 환경 변수가 설정되지 않은 경우 임시 응답 반환
+  if (!isSupabaseConfigured) {
+    console.warn('Supabase 환경 변수가 설정되지 않았습니다. 임시 응답을 반환합니다.');
+    return NextResponse.json({ 
+      message: '솔로프리너가 생성되었습니다 (임시 응답)',
+      id: Math.floor(Math.random() * 1000) + 3
+    });
+  }
   
   try {
     const body = await request.json();

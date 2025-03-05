@@ -83,6 +83,11 @@ export async function createSolopreneur(solopreneurData: Omit<ISolopreneur, 'id'
     throw new Error('솔로프리너 정보 저장 중 오류가 발생했습니다.');
   }
   
+  if (!insertedSolopreneur) {
+    console.error('솔로프리너 생성 후 ID를 가져오지 못했습니다.');
+    throw new Error('솔로프리너 정보 저장 후 ID를 가져오지 못했습니다.');
+  }
+  
   const solopreneurId = insertedSolopreneur.id;
   
   // 2. 소셜 미디어 링크 삽입

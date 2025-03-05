@@ -47,11 +47,29 @@ const tempSolopreneurs = {
   }
 };
 
+// 환경 변수 설정 여부 확인
+const isSupabaseConfigured = process.env.NEXT_PUBLIC_SUPABASE_URL && process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+
 export async function GET(
   request: NextRequest,
   { params }: { params: { id: string } }
 ) {
   console.log(`GET /api/solopreneurs/${params.id} 요청 받음`);
+  
+  // 환경 변수가 설정되지 않은 경우 즉시 임시 데이터 반환
+  if (!isSupabaseConfigured) {
+    console.warn('Supabase 환경 변수가 설정되지 않았습니다. 임시 데이터를 사용합니다.');
+    const tempSolopreneur = tempSolopreneurs[params.id];
+    
+    if (!tempSolopreneur) {
+      return NextResponse.json(
+        { error: '솔로프리너를 찾을 수 없습니다.' },
+        { status: 404 }
+      );
+    }
+    
+    return NextResponse.json(tempSolopreneur);
+  }
   
   try {
     const id = params.id;
@@ -161,6 +179,15 @@ export async function PUT(
   { params }: { params: { id: string } }
 ) {
   console.log(`PUT /api/solopreneurs/${params.id} 요청 받음`);
+  
+  // 환경 변수가 설정되지 않은 경우 임시 응답 반환
+  if (!isSupabaseConfigured) {
+    console.warn('Supabase 환경 변수가 설정되지 않았습니다. 임시 응답을 반환합니다.');
+    return NextResponse.json({ 
+      message: '솔로프리너가 업데이트되었습니다 (임시 응답)',
+      id: params.id
+    });
+  }
   
   try {
     const id = params.id;
@@ -313,6 +340,15 @@ export async function DELETE(
   { params }: { params: { id: string } }
 ) {
   console.log(`DELETE /api/solopreneurs/${params.id} 요청 받음`);
+  
+  // 환경 변수가 설정되지 않은 경우 임시 응답 반환
+  if (!isSupabaseConfigured) {
+    console.warn('Supabase 환경 변수가 설정되지 않았습니다. 임시 응답을 반환합니다.');
+    return NextResponse.json({ 
+      message: '솔로프리너가 삭제되었습니다 (임시 응답)',
+      id: params.id
+    });
+  }
   
   try {
     const id = params.id;

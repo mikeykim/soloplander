@@ -2,6 +2,9 @@ import { NextRequest, NextResponse } from 'next/server'
 import { supabase, testSupabaseConnection } from '@/utils/supabase'
 import { v4 as uuidv4 } from 'uuid'
 
+// 환경 변수 설정 여부 확인
+const isSupabaseConfigured = process.env.NEXT_PUBLIC_SUPABASE_URL && process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+
 export async function POST(request: NextRequest) {
   console.log('POST /api/upload 요청 받음');
   
@@ -43,6 +46,30 @@ export async function POST(request: NextRequest) {
         { error: '파일 크기는 5MB를 초과할 수 없습니다.' },
         { status: 400 }
       );
+    }
+    
+    // 환경 변수가 설정되지 않은 경우 임시 이미지 URL 반환
+    if (!isSupabaseConfigured) {
+      console.warn('Supabase 환경 변수가 설정되지 않았습니다. 임시 이미지 URL을 반환합니다.');
+      
+      // 플랫폼별 임시 이미지 URL 반환
+      let imageUrl = '';
+      
+      switch (platform) {
+        case 'youtube':
+          imageUrl = `https://picsum.photos/800/450?random=${Math.floor(Math.random() * 100)}`;
+          break;
+        case 'twitter':
+          imageUrl = `https://picsum.photos/600/300?random=${Math.floor(Math.random() * 100)}`;
+          break;
+        case 'linkedin':
+          imageUrl = `https://picsum.photos/700/400?random=${Math.floor(Math.random() * 100)}`;
+          break;
+        default:
+          imageUrl = `https://picsum.photos/400/400?random=${Math.floor(Math.random() * 100)}`;
+      }
+      
+      return NextResponse.json({ url: imageUrl });
     }
     
     // Supabase 연결 테스트
