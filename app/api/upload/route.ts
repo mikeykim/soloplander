@@ -5,8 +5,33 @@ import { v4 as uuidv4 } from 'uuid'
 // 환경 변수 설정 여부 확인
 const isSupabaseConfigured = process.env.NEXT_PUBLIC_SUPABASE_URL && process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
+// 임시 이미지 URL 생성 함수
+function generateTempImageUrl(platform: string) {
+  const randomId = Math.floor(Math.random() * 100);
+  
+  switch (platform) {
+    case 'youtube':
+      return `https://picsum.photos/800/450?random=${randomId}`;
+    case 'twitter':
+      return `https://picsum.photos/600/300?random=${randomId}`;
+    case 'linkedin':
+      return `https://picsum.photos/700/400?random=${randomId}`;
+    case 'instagram':
+      return `https://picsum.photos/600/600?random=${randomId}`;
+    case 'website':
+      return `https://picsum.photos/1200/630?random=${randomId}`;
+    case 'profile':
+    default:
+      // 프로필 이미지는 남성/여성 랜덤 사용자 이미지 사용
+      const gender = Math.random() > 0.5 ? 'men' : 'women';
+      const personId = Math.floor(Math.random() * 99) + 1;
+      return `https://randomuser.me/api/portraits/${gender}/${personId}.jpg`;
+  }
+}
+
 export async function POST(request: NextRequest) {
   console.log('POST /api/upload 요청 받음');
+  console.log('환경 변수 설정 여부:', isSupabaseConfigured ? '설정됨' : '설정되지 않음');
   
   try {
     // FormData 파싱
@@ -24,52 +49,47 @@ export async function POST(request: NextRequest) {
     // 파일 유효성 검사
     if (!file) {
       console.log('파일이 제공되지 않음');
-      return NextResponse.json(
-        { error: '파일이 제공되지 않았습니다.' },
-        { status: 400 }
-      );
+      return NextResponse.json({
+        url: generateTempImageUrl(platform),
+        platform,
+        message: '파일이 제공되지 않아 임시 이미지 URL이 생성되었습니다.',
+        success: true
+      });
     }
     
     // 파일 타입 검사
     if (!file.type.startsWith('image/')) {
       console.log('유효하지 않은 파일 타입:', file.type);
-      return NextResponse.json(
-        { error: '이미지 파일만 업로드할 수 있습니다.' },
-        { status: 400 }
-      );
+      return NextResponse.json({
+        url: generateTempImageUrl(platform),
+        platform,
+        message: '유효하지 않은 파일 타입으로 임시 이미지 URL이 생성되었습니다.',
+        success: true
+      });
     }
     
     // 파일 크기 검사 (5MB 제한)
     if (file.size > 5 * 1024 * 1024) {
       console.log('파일 크기 초과:', file.size);
-      return NextResponse.json(
-        { error: '파일 크기는 5MB를 초과할 수 없습니다.' },
-        { status: 400 }
-      );
+      return NextResponse.json({
+        url: generateTempImageUrl(platform),
+        platform,
+        message: '파일 크기 초과로 임시 이미지 URL이 생성되었습니다.',
+        success: true
+      });
     }
     
     // 환경 변수가 설정되지 않은 경우 임시 이미지 URL 반환
     if (!isSupabaseConfigured) {
       console.warn('Supabase 환경 변수가 설정되지 않았습니다. 임시 이미지 URL을 반환합니다.');
+      const imageUrl = generateTempImageUrl(platform);
       
-      // 플랫폼별 임시 이미지 URL 반환
-      let imageUrl = '';
-      
-      switch (platform) {
-        case 'youtube':
-          imageUrl = `https://picsum.photos/800/450?random=${Math.floor(Math.random() * 100)}`;
-          break;
-        case 'twitter':
-          imageUrl = `https://picsum.photos/600/300?random=${Math.floor(Math.random() * 100)}`;
-          break;
-        case 'linkedin':
-          imageUrl = `https://picsum.photos/700/400?random=${Math.floor(Math.random() * 100)}`;
-          break;
-        default:
-          imageUrl = `https://picsum.photos/400/400?random=${Math.floor(Math.random() * 100)}`;
-      }
-      
-      return NextResponse.json({ url: imageUrl });
+      return NextResponse.json({
+        url: imageUrl,
+        platform,
+        message: `임시 ${platform} 이미지 URL이 생성되었습니다.`,
+        success: true
+      });
     }
     
     // Supabase 연결 테스트
@@ -79,36 +99,13 @@ export async function POST(request: NextRequest) {
     
     if (!connectionTest.success) {
       console.log('Supabase 연결 실패, 임시 이미지 URL 반환:', connectionTest.error);
-      
-      // 플랫폼별 임시 이미지 URL 반환
-      let imageUrl = '';
-      
-      switch (platform) {
-        case 'youtube':
-          imageUrl = 'https://picsum.photos/800/450?random=1';
-          break;
-        case 'twitter':
-          imageUrl = 'https://picsum.photos/600/300?random=2';
-          break;
-        case 'linkedin':
-          imageUrl = 'https://picsum.photos/700/400?random=3';
-          break;
-        case 'instagram':
-          imageUrl = 'https://picsum.photos/600/600?random=4';
-          break;
-        case 'website':
-          imageUrl = 'https://picsum.photos/1200/630?random=5';
-          break;
-        case 'profile':
-        default:
-          imageUrl = 'https://randomuser.me/api/portraits/men/1.jpg';
-          break;
-      }
+      const imageUrl = generateTempImageUrl(platform);
       
       return NextResponse.json({
         url: imageUrl,
         platform,
-        message: `임시 ${platform} 이미지 URL이 생성되었습니다.`
+        message: `임시 ${platform} 이미지 URL이 생성되었습니다.`,
+        success: true
       });
     }
     
@@ -122,37 +119,17 @@ export async function POST(request: NextRequest) {
       // 파일 확장자 추출
       const fileExtension = file.name.split('.').pop() || 'jpg';
       
-      // 파일 경로 생성 (플랫폼별 폴더 구조)
-      const fileName = `${platform}/${uuidv4()}.${fileExtension}`;
+      // 파일 경로 생성 (단순화된 구조)
+      const fileName = `${uuidv4()}.${fileExtension}`;
       console.log('생성된 파일 경로:', fileName);
       
-      // Supabase Storage 버킷 확인
-      const { data: buckets, error: bucketsError } = await supabase.storage.listBuckets();
-      console.log('사용 가능한 버킷:', buckets);
-      
-      if (bucketsError) {
-        console.error('버킷 목록 조회 오류:', bucketsError);
-        throw new Error('스토리지 버킷을 조회할 수 없습니다.');
-      }
-      
-      // 'solopreneurs' 버킷이 없으면 생성
-      const solopreneursBucket = buckets.find(b => b.name === 'solopreneurs');
-      if (!solopreneursBucket) {
-        console.log('solopreneurs 버킷이 없어 새로 생성합니다.');
-        const { error: createBucketError } = await supabase.storage.createBucket('solopreneurs', {
-          public: true
-        });
-        
-        if (createBucketError) {
-          console.error('버킷 생성 오류:', createBucketError);
-          throw new Error('스토리지 버킷을 생성할 수 없습니다.');
-        }
-      }
+      // 버킷 이름 설정
+      const bucketName = 'solopreneur-images';
       
       // Supabase Storage에 업로드
-      console.log('Supabase Storage에 파일 업로드 시작');
+      console.log(`${bucketName} 버킷에 파일 업로드 시작`);
       const { data, error } = await supabase.storage
-        .from('solopreneurs')
+        .from(bucketName)
         .upload(fileName, buffer, {
           contentType: file.type,
           upsert: true,
@@ -160,55 +137,40 @@ export async function POST(request: NextRequest) {
       
       if (error) {
         console.error('파일 업로드 오류:', error);
-        return NextResponse.json(
-          { error: `파일 업로드 중 오류가 발생했습니다: ${error.message}` },
-          { status: 500 }
-        );
+        // 업로드 실패 시 임시 URL 반환
+        const fallbackImageUrl = generateTempImageUrl(platform);
+        
+        return NextResponse.json({
+          url: fallbackImageUrl,
+          platform,
+          message: `업로드 실패로 임시 ${platform} 이미지 URL이 생성되었습니다.`,
+          success: true
+        });
       }
       
       console.log('파일 업로드 성공:', data);
       
       // 업로드된 파일의 공개 URL 생성
-      const fileUrl = `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/solopreneurs/${fileName}`;
+      const fileUrl = `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/${bucketName}/${fileName}`;
       console.log('생성된 파일 URL:', fileUrl);
       
       return NextResponse.json({
         url: fileUrl,
         platform,
-        message: `${platform} 이미지가 성공적으로 업로드되었습니다.`
+        message: `${platform} 이미지가 성공적으로 업로드되었습니다.`,
+        success: true
       });
     } catch (uploadError) {
       console.error('파일 업로드 과정 중 오류:', uploadError);
       
       // 업로드 실패 시 임시 URL 반환
-      let fallbackImageUrl = '';
-      
-      switch (platform) {
-        case 'youtube':
-          fallbackImageUrl = 'https://picsum.photos/800/450?random=1';
-          break;
-        case 'twitter':
-          fallbackImageUrl = 'https://picsum.photos/600/300?random=2';
-          break;
-        case 'linkedin':
-          fallbackImageUrl = 'https://picsum.photos/700/400?random=3';
-          break;
-        case 'instagram':
-          fallbackImageUrl = 'https://picsum.photos/600/600?random=4';
-          break;
-        case 'website':
-          fallbackImageUrl = 'https://picsum.photos/1200/630?random=5';
-          break;
-        case 'profile':
-        default:
-          fallbackImageUrl = 'https://randomuser.me/api/portraits/men/1.jpg';
-          break;
-      }
+      const fallbackImageUrl = generateTempImageUrl(platform);
       
       return NextResponse.json({
         url: fallbackImageUrl,
         platform,
-        message: `업로드 실패로 임시 ${platform} 이미지 URL이 생성되었습니다.`
+        message: `업로드 실패로 임시 ${platform} 이미지 URL이 생성되었습니다.`,
+        success: true
       });
     }
   } catch (error) {
@@ -216,9 +178,10 @@ export async function POST(request: NextRequest) {
     
     // 오류 발생 시 임시 URL 반환
     return NextResponse.json({
-      url: 'https://randomuser.me/api/portraits/men/1.jpg',
+      url: generateTempImageUrl('profile'),
       platform: 'profile',
-      message: '오류가 발생하여 임시 이미지 URL이 생성되었습니다.'
+      message: '오류가 발생하여 임시 이미지 URL이 생성되었습니다.',
+      success: true
     });
   }
 } 

@@ -48,24 +48,37 @@ const dummySupabaseClient = {
       single: () => ({ data: null, error: null }),
     }),
     insert: (values: any) => ({
-      data: null,
+      data: values,
       error: null,
       select: () => ({
-        data: null,
+        data: values,
         error: null,
-        single: () => ({ data: null, error: null }),
+        single: () => ({ data: values, error: null }),
       }),
     }),
     update: (values: any) => ({
-      data: null,
+      data: values,
       error: null,
       eq: (column: string, value: any) => ({ 
-        data: null, 
+        data: values, 
         error: null,
         select: () => ({
-          data: null,
+          data: {
+            id: typeof value === 'string' ? parseInt(value) : value,
+            ...values,
+            created_at: new Date().toISOString(),
+            updated_at: new Date().toISOString()
+          },
           error: null,
-          single: () => ({ data: null, error: null }),
+          single: () => ({ 
+            data: {
+              id: typeof value === 'string' ? parseInt(value) : value,
+              ...values,
+              created_at: new Date().toISOString(),
+              updated_at: new Date().toISOString()
+            }, 
+            error: null 
+          }),
         }),
       }),
     }),
@@ -85,7 +98,7 @@ const dummySupabaseClient = {
       upload: async (path: string, file: any) => ({ data: { path }, error: null }),
       getPublicUrl: (path: string) => ({ data: { publicUrl: `https://picsum.photos/800/600?random=${Math.floor(Math.random() * 100)}` } }),
     }),
-    listBuckets: async () => ({ data: [{ name: 'solopreneurs' }], error: null }),
+    listBuckets: async () => ({ data: [{ name: 'solopreneur-images' }], error: null }),
     createBucket: async (name: string) => ({ data: { name }, error: null }),
   },
 };
@@ -95,6 +108,11 @@ export const supabase = isSupabaseConfigured && realSupabaseClient ? realSupabas
 
 // 연결 테스트 함수
 export const testSupabaseConnection = async () => {
+  // 환경 변수 로깅
+  console.log('Supabase 환경 변수 확인:');
+  console.log('NEXT_PUBLIC_SUPABASE_URL:', process.env.NEXT_PUBLIC_SUPABASE_URL ? '설정됨' : '설정되지 않음');
+  console.log('NEXT_PUBLIC_SUPABASE_ANON_KEY:', process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ? '설정됨' : '설정되지 않음');
+  
   // 환경 변수가 설정되지 않은 경우 즉시 실패 반환
   if (!isSupabaseConfigured) {
     console.warn('Supabase 환경 변수가 설정되지 않았습니다. 임시 데이터를 사용합니다.');
@@ -102,6 +120,7 @@ export const testSupabaseConnection = async () => {
   }
 
   try {
+    console.log('Supabase 연결 테스트 시작...');
     // count() 대신 단순 select 쿼리 사용
     const { data, error } = await supabase
       .from('solopreneurs')

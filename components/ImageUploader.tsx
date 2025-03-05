@@ -27,6 +27,8 @@ export default function ImageUploader({
     const file = e.target.files?.[0]
     if (!file) return
     
+    console.log('파일 선택됨:', file.name, file.type, file.size);
+    
     // 파일 크기 제한 (5MB)
     if (file.size > 5 * 1024 * 1024) {
       setError('파일 크기는 5MB 이하여야 합니다.')
@@ -48,18 +50,24 @@ export default function ImageUploader({
       formData.append('file', file)
       formData.append('platform', platform)
       
+      console.log('이미지 업로드 요청 시작:', platform);
+      
       // 파일 업로드 API 호출
       const response = await fetch('/api/upload', {
         method: 'POST',
         body: formData,
       })
       
+      console.log('이미지 업로드 응답 상태:', response.status, response.statusText);
+      
       if (!response.ok) {
         const data = await response.json()
+        console.error('이미지 업로드 실패:', data);
         throw new Error(data.error || '이미지 업로드에 실패했습니다.')
       }
       
       const data = await response.json()
+      console.log('이미지 업로드 성공:', data);
       
       // 이미지 URL 설정
       setImage(data.url)
@@ -67,6 +75,7 @@ export default function ImageUploader({
       // 부모 컴포넌트에 이미지 URL 전달
       onImageUpload(data.url)
     } catch (err) {
+      console.error('이미지 업로드 오류:', err);
       setError(err instanceof Error ? err.message : '이미지 업로드 중 오류가 발생했습니다.')
     } finally {
       setIsUploading(false)

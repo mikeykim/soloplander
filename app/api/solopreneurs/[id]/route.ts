@@ -126,7 +126,7 @@ export async function GET(
     const { data: previewsData, error: previewsError } = await supabase
       .from('solopreneur_previews')
       .select('*')
-      .eq('solopreneurId', id);
+      .eq('solopreneur_id', id);
     
     // 링크 데이터 구성
     const links: any = {};
@@ -141,7 +141,7 @@ export async function GET(
     if (!previewsError && previewsData) {
       previewsData.forEach((preview) => {
         if (!previews[preview.platform]) {
-          previews[preview.platform] = preview.imageUrl;
+          previews[preview.platform] = preview.image_url;
         }
       });
     }
@@ -149,14 +149,26 @@ export async function GET(
     // 링크 객체에 미리보기 추가
     links.previews = previews;
     
+    // 임시 미리보기 이미지 추가 (데이터가 없는 경우)
+    if (Object.keys(previews).length === 0) {
+      links.previews = {
+        youtube: links.youtube ? `https://picsum.photos/800/450?random=${id}1` : undefined,
+        twitter: links.twitter ? `https://picsum.photos/600/300?random=${id}2` : undefined,
+        linkedin: links.linkedin ? `https://picsum.photos/700/400?random=${id}3` : undefined,
+        website: links.website ? `https://picsum.photos/1200/630?random=${id}4` : undefined
+      };
+    }
+    
     // 최종 데이터 구성
-    const result = {
+    const finalData = {
       ...solopreneur,
       links,
       keywords: [], // 키워드 기능은 추후 구현
     };
     
-    return NextResponse.json(result);
+    console.log('솔로프리너 데이터 반환:', JSON.stringify(finalData, null, 2));
+    
+    return NextResponse.json(finalData);
   } catch (error) {
     console.error('솔로프리너 상세 API 오류:', error);
     
@@ -183,10 +195,43 @@ export async function PUT(
   // 환경 변수가 설정되지 않은 경우 임시 응답 반환
   if (!isSupabaseConfigured) {
     console.warn('Supabase 환경 변수가 설정되지 않았습니다. 임시 응답을 반환합니다.');
-    return NextResponse.json({ 
-      message: '솔로프리너가 업데이트되었습니다 (임시 응답)',
-      id: params.id
-    });
+    
+    try {
+      const body = await request.json();
+      const { name, region, image, description, gender, links = {}, keywords = [] } = body;
+      
+      // 필수 필드 검증
+      if (!name || !region || !description || !gender) {
+        return NextResponse.json(
+          { error: '필수 필드가 누락되었습니다.' },
+          { status: 400 }
+        );
+      }
+      
+      // 임시 응답 데이터 생성
+      const mockSolopreneur = {
+        id: parseInt(params.id),
+        name,
+        region,
+        image: image || `https://randomuser.me/api/portraits/${gender === 'male' ? 'men' : 'women'}/${Math.floor(Math.random() * 10) + 1}.jpg`,
+        description,
+        gender,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString()
+      };
+      
+      return NextResponse.json({
+        ...mockSolopreneur,
+        links,
+        keywords
+      });
+    } catch (error) {
+      console.error('임시 응답 생성 중 오류:', error);
+      return NextResponse.json(
+        { error: '서버 오류가 발생했습니다.' },
+        { status: 500 }
+      );
+    }
   }
   
   try {
@@ -207,16 +252,23 @@ export async function PUT(
     
     if (!connectionTest.success) {
       console.log('Supabase 연결 실패, 임시 응답 반환:', connectionTest.error);
-      return NextResponse.json({ 
+      
+      // 임시 응답 데이터 생성
+      const mockSolopreneur = {
         id: parseInt(id),
         name,
         region,
-        image,
+        image: image || `https://randomuser.me/api/portraits/${gender === 'male' ? 'men' : 'women'}/${Math.floor(Math.random() * 10) + 1}.jpg`,
         description,
         gender,
-        links,
-        keywords,
+        created_at: new Date().toISOString(),
         updated_at: new Date().toISOString()
+      };
+      
+      return NextResponse.json({
+        ...mockSolopreneur,
+        links,
+        keywords
       });
     }
     

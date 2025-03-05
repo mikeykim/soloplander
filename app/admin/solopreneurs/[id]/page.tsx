@@ -149,6 +149,8 @@ export default function EditSolopreneurPage({ params }: IPageProps) {
         keywords: formData.keywords.split(',').map(k => k.trim()).filter(Boolean)
       }
 
+      console.log('솔로프리너 업데이트 요청 데이터:', apiData);
+
       const response = await fetch(`/api/solopreneurs/${id}`, {
         method: 'PUT',
         headers: {
@@ -157,15 +159,18 @@ export default function EditSolopreneurPage({ params }: IPageProps) {
         body: JSON.stringify(apiData),
       })
 
+      const responseData = await response.json();
+      console.log('솔로프리너 업데이트 응답:', responseData);
+
       if (!response.ok) {
-        const errorData = await response.json()
-        throw new Error(errorData.message || 'Failed to update solopreneur')
+        throw new Error(responseData.error || 'Failed to update solopreneur')
       }
 
       // Redirect to the solopreneurs list page
       router.push('/admin/solopreneurs')
       router.refresh()
     } catch (err) {
+      console.error('솔로프리너 업데이트 오류:', err);
       setError(err instanceof Error ? err.message : 'An error occurred')
     } finally {
       setSaving(false)

@@ -278,4 +278,18 @@
   transform-origin: top;
   overflow: hidden;
   background: white;
+}
+
+.platformLink {
+  color: var(--primary);
+  cursor: pointer;
+  font-weight: 500;
+  transition: color 0.2s ease;
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 2px;
+}
+
+.platformLink:hover {
+  color: var(--hover);
 } 

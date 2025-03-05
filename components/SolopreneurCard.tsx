@@ -185,23 +185,51 @@ export default function SolopreneurCard({ solopreneur, isFirst }: Props) {
 
   // 사용 가능한 링크 텍스트 생성
   const getAvailableLinksText = () => {
-    const links: string[] = [];
-    if (solopreneur.links.youtube) links.push('YouTube');
-    if (solopreneur.links.twitter) links.push('Twitter');
-    if (solopreneur.links.linkedin) links.push('LinkedIn');
-    if (solopreneur.links.website) links.push('Website');
+    const linkPlatforms: string[] = [];
+    if (solopreneur.links.youtube) linkPlatforms.push('YouTube');
+    if (solopreneur.links.twitter) linkPlatforms.push('Twitter');
+    if (solopreneur.links.linkedin) linkPlatforms.push('LinkedIn');
+    if (solopreneur.links.website) linkPlatforms.push('Website');
     
-    if (links.length === 0) return '';
+    if (linkPlatforms.length === 0) return '';
     
     const pronoun = solopreneur.gender === 'female' ? 'her' : 'his';
     
-    if (links.length === 1) {
-      return `Check out ${pronoun} ${links[0]}`;
-    } else if (links.length === 2) {
-      return `Check out ${pronoun} ${links[0]} and ${links[1]}`;
+    // 각 플랫폼 이름을 span으로 감싸서 hover 이벤트 추가
+    const wrapPlatformWithHover = (platform: string) => {
+      const platformLower = platform.toLowerCase();
+      return (
+        <span 
+          key={platformLower}
+          className={styles.platformLink}
+          onMouseEnter={() => setActivePreview(platformLower)}
+          onMouseLeave={() => setActivePreview(null)}
+        >
+          {platform}
+        </span>
+      );
+    };
+    
+    const wrappedLinks = linkPlatforms.map(platform => wrapPlatformWithHover(platform));
+    
+    if (wrappedLinks.length === 1) {
+      return (
+        <>Check out {pronoun} {wrappedLinks[0]}</>
+      );
+    } else if (wrappedLinks.length === 2) {
+      return (
+        <>Check out {pronoun} {wrappedLinks[0]} and {wrappedLinks[1]}</>
+      );
     } else {
-      const lastLink = links.pop();
-      return `Check out ${pronoun} ${links.join(', ')}, and ${lastLink}`;
+      const lastLink = wrappedLinks.pop();
+      return (
+        <>Check out {pronoun} {wrappedLinks.reduce((prev, curr, i) => 
+          <>
+            {prev}
+            {i > 0 ? ', ' : ''}
+            {curr}
+          </>, <></>)}, and {lastLink}</>
+      );
     }
   };
 
