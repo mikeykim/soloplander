@@ -1,6 +1,6 @@
 import { solopreneursData } from '@/data/solopreneurs'
-import type { ISolopreneur, RegionType } from '@/types'
+import type { RegionType, ISolopreneur } from '@/types'
 
-export const getSolopreneursByRegion = (region: RegionType): ISolopreneur[] => {
+export function getSolopreneursByRegion(region: RegionType): ISolopreneur[] {
   return solopreneursData.filter(solopreneur => solopreneur.region === region)
 } 

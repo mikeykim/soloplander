@@ -31,3 +31,8 @@ export const apiVersion = process.env.NEXT_PUBLIC_SANITY_API_VERSION || '2023-05
 export const isProduction = process.env.NODE_ENV === 'production';
 
 export const useCdn = false
+
+// Supabase 연결 정보
+export const supabaseUrl = 'https://seuttskwyxmznloukxog.supabase.co';
+export const supabaseAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNldXR0c2t3eXhtem5sb3VreG9nIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDEwNjgyNjMsImV4cCI6MjA1NjY0NDI2M30.aM8fuEGJvni4RqFqWO1i9v9yhc2FdWDdIz5wJzKEDDE';
+export const databaseUrl = 'postgresql://postgres:Alsrjsdl0450!@seuttskwyxmznloukxog.supabase.co:5432/postgres';

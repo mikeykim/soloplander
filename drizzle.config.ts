@@ -5,6 +5,6 @@ export default {
   out: './drizzle',
   driver: 'pg',
   dbCredentials: {
-    connectionString: process.env.DATABASE_URL!,
+    connectionString: 'postgresql://postgres:Alsrjsdl0450!@seuttskwyxmznloukxog.supabase.co:5432/postgres',
   },
 } as Config 

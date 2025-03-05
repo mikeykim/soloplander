@@ -5,7 +5,7 @@ import styles from './page.module.css'
 import { notFound } from 'next/navigation'
 import type { RegionType } from '@/types'
 
-interface PageProps {
+interface IPageProps {
   params: {
     region: 'america' | 'europe' | 'asia'
   }
@@ -23,7 +23,7 @@ const descriptions = {
   asia: "Bridging ancient wisdom with future vision, Asian solopreneurs are painting tomorrow's business landscape with bold strokes of innovation and cultural heritage."
 } as const
 
-export default function RegionPage({ params }: PageProps) {
+export default function RegionPage({ params }: IPageProps) {
   if (!regionMap[params.region as keyof typeof regionMap]) {
     notFound()
   }

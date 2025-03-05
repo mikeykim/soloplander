@@ -90,6 +90,101 @@
   padding: 0 1rem;
 }
 
+.searchContainer {
+  max-width: 700px;
+  margin: 0 auto 2rem;
+  padding: 0 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.searchInput {
+  width: 100%;
+  padding: 0.85rem 1.5rem;
+  border: 2px solid #e5e7eb;
+  border-radius: 12px;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+  background-color: white;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+  font-weight: 500;
+  color: #4b5563;
+}
+
+.searchInput:focus {
+  outline: none;
+  border-color: #6366f1;
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15);
+  transform: translateY(-1px);
+}
+
+.searchInput::placeholder {
+  color: #9ca3af;
+  font-weight: 400;
+}
+
+.keywordsContainer {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.keywordButton {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  border: 1px solid #e5e7eb;
+  border-radius: 9999px;
+  font-size: 0.875rem;
+  background-color: white;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.keywordButton:hover {
+  background-color: #f9fafb;
+  transform: translateY(-1px);
+}
+
+.keywordButtonSelected {
+  background-color: #6366f1;
+  color: white;
+  border-color: #6366f1;
+}
+
+.keywordButtonSelected:hover {
+  background-color: #4f46e5;
+}
+
+.noResults {
+  text-align: center;
+  padding: 2rem;
+  color: #6b7280;
+  font-size: 1.125rem;
+}
+
+.resetButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.5rem 1rem;
+  background-color: #ef4444;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  margin-top: 1rem;
+}
+
+.resetButton:hover {
+  background-color: #dc2626;
+}
+
 .solopreneursGrid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -185,5 +280,19 @@
 
   .regionContent {
     margin-top: 1rem;
+  }
+
+  .keywordsContainer {
+    gap: 0.5rem;
+  }
+  
+  .keywordButton {
+    padding: 0.4rem 0.75rem;
+    font-size: 0.75rem;
+  }
+  
+  .searchContainer {
+    margin-bottom: 1.5rem;
+    padding: 0 1rem;
   }
 } 
