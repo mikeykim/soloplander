@@ -179,8 +179,8 @@ export async function POST(request: NextRequest) {
     }
     
     // 링크 및 미리보기 이미지 처리
-    const linkPromises = [];
-    const previewPromises = [];
+    const linkPromises: any[] = [];
+    const previewPromises: any[] = [];
     
     // 링크 플랫폼 목록
     const platforms = ['youtube', 'twitter', 'linkedin', 'instagram', 'website'];
@@ -190,7 +190,7 @@ export async function POST(request: NextRequest) {
       if (links[platform]) {
         linkPromises.push(
           supabase.from('solopreneur_links').insert({
-            solopreneur_id: solopreneur.id,
+            solopreneurId: solopreneur.id,
             platform,
             url: links[platform],
           })
@@ -204,9 +204,9 @@ export async function POST(request: NextRequest) {
         if (links.previews[platform]) {
           previewPromises.push(
             supabase.from('solopreneur_previews').insert({
-              solopreneur_id: solopreneur.id,
+              solopreneurId: solopreneur.id,
               platform,
-              image_url: links.previews[platform],
+              imageUrl: links.previews[platform],
             })
           );
         }

@@ -5,9 +5,7 @@ import { NextResponse } from 'next/server'
 const auth = new google.auth.GoogleAuth({
   credentials: {
     client_email: process.env.GOOGLE_CLIENT_EMAIL,
-    private_key: process.env.GOOGLE_PRIVATE_KEY 
-      ? JSON.parse(process.env.GOOGLE_PRIVATE_KEY)
-      : undefined
+    private_key: process.env.GOOGLE_PRIVATE_KEY || undefined
   },
   scopes: ['https://www.googleapis.com/auth/spreadsheets']
 })

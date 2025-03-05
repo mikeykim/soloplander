@@ -102,13 +102,13 @@ export async function GET(
     const { data: linksData, error: linksError } = await supabase
       .from('solopreneur_links')
       .select('*')
-      .eq('solopreneur_id', id);
+      .eq('solopreneurId', id);
     
     // 미리보기 이미지 조회
     const { data: previewsData, error: previewsError } = await supabase
       .from('solopreneur_previews')
       .select('*')
-      .eq('solopreneur_id', id);
+      .eq('solopreneurId', id);
     
     // 링크 데이터 구성
     const links: any = {};
@@ -123,7 +123,7 @@ export async function GET(
     if (!previewsError && previewsData) {
       previewsData.forEach((preview) => {
         if (!previews[preview.platform]) {
-          previews[preview.platform] = preview.image_url;
+          previews[preview.platform] = preview.imageUrl;
         }
       });
     }
@@ -222,7 +222,7 @@ export async function PUT(
       const { error: deleteLinksError } = await supabase
         .from('solopreneur_links')
         .delete()
-        .eq('solopreneur_id', id);
+        .eq('solopreneurId', id);
       
       if (deleteLinksError) {
         console.error('링크 삭제 오류:', deleteLinksError);
@@ -232,12 +232,12 @@ export async function PUT(
       const platforms = ['youtube', 'twitter', 'linkedin', 'instagram', 'website'];
       
       // 새 링크 추가
-      const linkInserts = [];
+      const linkInserts: { solopreneurId: string; platform: string; url: string }[] = [];
       
       for (const platform of platforms) {
         if (links[platform]) {
           linkInserts.push({
-            solopreneur_id: id,
+            solopreneurId: id,
             platform,
             url: links[platform],
           });
@@ -261,7 +261,7 @@ export async function PUT(
       const { error: deletePreviewsError } = await supabase
         .from('solopreneur_previews')
         .delete()
-        .eq('solopreneur_id', id);
+        .eq('solopreneurId', id);
       
       if (deletePreviewsError) {
         console.error('미리보기 이미지 삭제 오류:', deletePreviewsError);
@@ -271,14 +271,14 @@ export async function PUT(
       const platforms = ['youtube', 'twitter', 'linkedin', 'instagram', 'website'];
       
       // 새 미리보기 이미지 추가
-      const previewInserts = [];
+      const previewInserts: { solopreneurId: string; platform: string; imageUrl: string }[] = [];
       
       for (const platform of platforms) {
         if (links.previews[platform]) {
           previewInserts.push({
-            solopreneur_id: id,
+            solopreneurId: id,
             platform,
-            image_url: links.previews[platform],
+            imageUrl: links.previews[platform],
           });
         }
       }

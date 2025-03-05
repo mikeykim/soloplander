@@ -1,11 +1,14 @@
 import {UserIcon} from '@sanity/icons'
 import {defineField, defineType} from 'sanity'
+import React from 'react'
+
+// UserIcon을 함수 컴포넌트로 래핑
+const UserIconComponent = () => React.createElement(UserIcon)
 
 export const authorType = defineType({
   name: 'author',
   title: 'Author',
   type: 'document',
-  icon: UserIcon,
   fields: [
     defineField({
       name: 'name',
