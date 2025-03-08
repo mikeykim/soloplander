@@ -54,7 +54,7 @@ export async function POST(request: NextRequest) {
         platform,
         message: '파일이 제공되지 않아 임시 이미지 URL이 생성되었습니다.',
         success: true
-      });
+      }, { status: 200 });
     }
     
     // 파일 타입 검사
@@ -65,7 +65,7 @@ export async function POST(request: NextRequest) {
         platform,
         message: '유효하지 않은 파일 타입으로 임시 이미지 URL이 생성되었습니다.',
         success: true
-      });
+      }, { status: 200 });
     }
     
     // 파일 크기 검사 (5MB 제한)
@@ -76,7 +76,7 @@ export async function POST(request: NextRequest) {
         platform,
         message: '파일 크기 초과로 임시 이미지 URL이 생성되었습니다.',
         success: true
-      });
+      }, { status: 200 });
     }
     
     // 환경 변수가 설정되지 않은 경우 임시 이미지 URL 반환
@@ -89,7 +89,7 @@ export async function POST(request: NextRequest) {
         platform,
         message: `임시 ${platform} 이미지 URL이 생성되었습니다.`,
         success: true
-      });
+      }, { status: 200 });
     }
     
     // Supabase 연결 테스트
@@ -106,7 +106,7 @@ export async function POST(request: NextRequest) {
         platform,
         message: `임시 ${platform} 이미지 URL이 생성되었습니다.`,
         success: true
-      });
+      }, { status: 200 });
     }
     
     try {
@@ -126,40 +126,69 @@ export async function POST(request: NextRequest) {
       // 버킷 이름 설정
       const bucketName = 'solopreneur-images';
       
-      // Supabase Storage에 업로드
+      // Supabase Storage에 업로드 시도
       console.log(`${bucketName} 버킷에 파일 업로드 시작`);
-      const { data, error } = await supabase.storage
-        .from(bucketName)
-        .upload(fileName, buffer, {
-          contentType: file.type,
-          upsert: true,
-        });
-      
-      if (error) {
-        console.error('파일 업로드 오류:', error);
-        // 업로드 실패 시 임시 URL 반환
+      try {
+        const { data, error } = await supabase.storage
+          .from(bucketName)
+          .upload(fileName, buffer, {
+            contentType: file.type,
+            upsert: true,
+          });
+        
+        if (error) {
+          console.error('파일 업로드 오류:', error);
+          
+          // 권한 문제일 경우 RLS 정책 문제 메시지 표시
+          if (error.message?.includes('new row violates row-level security policy') || 
+              error.message?.includes('permission denied')) {
+            console.log('Supabase RLS 정책 문제 감지. 대체 이미지 사용');
+            const fallbackImageUrl = generateTempImageUrl(platform);
+            
+            return NextResponse.json({
+              url: fallbackImageUrl,
+              platform,
+              message: 'Supabase 스토리지 권한 문제로 임시 이미지 URL이 생성되었습니다.',
+              success: true,
+              details: error.message
+            }, { status: 200 });
+          }
+          
+          // 기타 오류
+          const fallbackImageUrl = generateTempImageUrl(platform);
+          return NextResponse.json({
+            url: fallbackImageUrl,
+            platform,
+            message: `업로드 실패로 임시 ${platform} 이미지 URL이 생성되었습니다.`,
+            success: true,
+            details: error.message
+          }, { status: 200 });
+        }
+        
+        console.log('파일 업로드 성공:', data);
+        
+        // 업로드된 파일의 공개 URL 생성
+        const fileUrl = `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/${bucketName}/${fileName}`;
+        console.log('생성된 파일 URL:', fileUrl);
+        
+        return NextResponse.json({
+          url: fileUrl,
+          platform,
+          message: `${platform} 이미지가 성공적으로 업로드되었습니다.`,
+          success: true
+        }, { status: 200 });
+      } catch (storageError) {
+        console.error('Supabase Storage 오류:', storageError);
         const fallbackImageUrl = generateTempImageUrl(platform);
         
         return NextResponse.json({
           url: fallbackImageUrl,
           platform,
-          message: `업로드 실패로 임시 ${platform} 이미지 URL이 생성되었습니다.`,
-          success: true
-        });
+          message: `스토리지 오류로 임시 ${platform} 이미지 URL이 생성되었습니다.`,
+          success: true,
+          details: storageError instanceof Error ? storageError.message : '알 수 없는 오류'
+        }, { status: 200 });
       }
-      
-      console.log('파일 업로드 성공:', data);
-      
-      // 업로드된 파일의 공개 URL 생성
-      const fileUrl = `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/${bucketName}/${fileName}`;
-      console.log('생성된 파일 URL:', fileUrl);
-      
-      return NextResponse.json({
-        url: fileUrl,
-        platform,
-        message: `${platform} 이미지가 성공적으로 업로드되었습니다.`,
-        success: true
-      });
     } catch (uploadError) {
       console.error('파일 업로드 과정 중 오류:', uploadError);
       
@@ -170,18 +199,20 @@ export async function POST(request: NextRequest) {
         url: fallbackImageUrl,
         platform,
         message: `업로드 실패로 임시 ${platform} 이미지 URL이 생성되었습니다.`,
-        success: true
-      });
+        success: true,
+        details: uploadError instanceof Error ? uploadError.message : '알 수 없는 오류'
+      }, { status: 200 });
     }
   } catch (error) {
     console.error('파일 업로드 중 예외 발생:', error);
     
-    // 오류 발생 시 임시 URL 반환
+    // 오류 발생 시 임시 URL 반환 (항상 200 상태 코드 반환)
     return NextResponse.json({
       url: generateTempImageUrl('profile'),
       platform: 'profile',
       message: '오류가 발생하여 임시 이미지 URL이 생성되었습니다.',
-      success: true
-    });
+      success: true,
+      details: error instanceof Error ? error.message : '알 수 없는 오류'
+    }, { status: 200 });
   }
 } 

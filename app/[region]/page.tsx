@@ -1,9 +1,9 @@
-import { getSolopreneursByRegion } from '@/utils/solopreneurs'
+import { getSolopreneursByRegion, fetchSolopreneursByRegion } from '@/utils/solopreneurs'
 import SolopreneurCard from '@/components/SolopreneurCard'
 import RegionDescription from '@/components/RegionDescription'
 import styles from './page.module.css'
 import { notFound } from 'next/navigation'
-import type { RegionType } from '@/types'
+import type { RegionType, ISolopreneur } from '@/types'
 
 interface IPageProps {
   params: {
@@ -23,13 +23,45 @@ const descriptions = {
   asia: "Bridging ancient wisdom with future vision, Asian solopreneurs are painting tomorrow's business landscape with bold strokes of innovation and cultural heritage."
 } as const
 
-export default function RegionPage({ params }: IPageProps) {
+export default async function RegionPage({ params }: IPageProps) {
   if (!regionMap[params.region as keyof typeof regionMap]) {
     notFound()
   }
 
   const region = regionMap[params.region] as RegionType
-  const solopreneurs = getSolopreneursByRegion(region)
+  
+  // 환경 변수 체크와 로깅
+  const apiUrl = process.env.NEXT_PUBLIC_API_URL || process.env.VERCEL_URL || 'http://localhost:3000'
+  console.log('사용 중인 API URL:', apiUrl);
+  console.log('현재 리전:', region);
+  
+  // API 데이터와 하드코딩된 데이터 모두 가져오기
+  let apiSolopreneurs: ISolopreneur[] = [];
+  let hardcodedSolopreneurs: ISolopreneur[] = [];
+  
+  try {
+    // API를 통해 데이터를 가져옵니다
+    apiSolopreneurs = await fetchSolopreneursByRegion(region);
+    console.log(`API에서 ${region} 솔로프리너 ${apiSolopreneurs.length}명 가져옴`);
+  } catch (error) {
+    console.error('API 솔로프리너 데이터 가져오기 오류:', error);
+  }
+  
+  // 하드코딩된 데이터도 가져옵니다 (백업용)
+  hardcodedSolopreneurs = getSolopreneursByRegion(region);
+  console.log(`하드코딩된 ${region} 솔로프리너 ${hardcodedSolopreneurs.length}명 가져옴`);
+
+  // 최종 사용할 데이터 결정 (API 데이터 우선)
+  const finalSolopreneurs = apiSolopreneurs.length > 0 
+    ? apiSolopreneurs 
+    : hardcodedSolopreneurs;
+  
+  console.log(`최종적으로 ${region} 솔로프리너 ${finalSolopreneurs.length}명 표시 예정 (출처: ${apiSolopreneurs.length > 0 ? 'API' : '하드코딩'})`);
+  
+  // 각 솔로프리너의 리전 출력 (디버깅용)
+  finalSolopreneurs.forEach(s => {
+    console.log(`솔로프리너 ${s.name} 리전:`, s.region);
+  });
   
   return (
     <div className={styles.container}>
@@ -38,9 +70,9 @@ export default function RegionPage({ params }: IPageProps) {
         description={descriptions[params.region as keyof typeof descriptions]}
       />
       <div className={styles.grid}>
-        {solopreneurs.map((solopreneur, index) => (
+        {finalSolopreneurs.map((solopreneur, index) => (
           <SolopreneurCard 
-            key={solopreneur.name} 
+            key={`${solopreneur.id || ''}-${solopreneur.name}-${index}`} 
             solopreneur={solopreneur}
             isFirst={index === 0}
           />
@@ -49,6 +81,10 @@ export default function RegionPage({ params }: IPageProps) {
     </div>
   )
 }
+
+// 캐싱 비활성화 (항상 최신 데이터 사용)
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
 
 export function generateStaticParams() {
   return [

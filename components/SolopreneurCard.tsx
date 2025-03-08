@@ -4,6 +4,7 @@ import Image from 'next/image'
 import styles from './SolopreneurCard.module.css'
 import type { ISolopreneur } from '@/types'
 import { useState, useEffect, useRef } from 'react'
+import { createPortal } from 'react-dom'
 
 interface Props {
   solopreneur: ISolopreneur
@@ -13,6 +14,9 @@ interface Props {
 export default function SolopreneurCard({ solopreneur, isFirst }: Props) {
   const [activePreview, setActivePreview] = useState<string | null>(null)
   const cardRef = useRef<HTMLDivElement>(null)
+  const previewRef = useRef<HTMLDivElement>(null)
+  const [previewPosition, setPreviewPosition] = useState({ x: 0, y: 0 })
+  const [portalContainer, setPortalContainer] = useState<HTMLElement | null>(null)
 
   useEffect(() => {
     // 콘솔 오류 메시지 무시
@@ -80,107 +84,182 @@ export default function SolopreneurCard({ solopreneur, isFirst }: Props) {
     }
   }, [activePreview, isFirst])
 
+  useEffect(() => {
+    if (!activePreview || !cardRef.current) return;
+
+    // 마우스 움직임에 따라 미리보기 위치 업데이트
+    const updatePreviewPosition = (e: MouseEvent) => {
+      // 화면 크기 가져오기
+      const viewportWidth = window.innerWidth;
+      const viewportHeight = window.innerHeight;
+      
+      // 미리보기 카드 예상 크기
+      const previewWidth = 400;
+      const previewHeight = 300;
+      
+      // 마우스 커서 위치에 따라 왼쪽 또는 오른쪽에 배치
+      // 기본적으로 마우스 커서의 오른쪽에 표시
+      let x = e.clientX + 40; // 오른쪽으로 40px 떨어진 곳에 위치
+      let y = e.clientY - previewHeight / 2; // 마우스 커서 높이의 중앙에 맞춤
+      
+      // 화면 오른쪽 경계를 넘어가는 경우 왼쪽에 표시
+      if (x + previewWidth > viewportWidth - 20) {
+        x = e.clientX - previewWidth - 40; // 왼쪽으로 40px 떨어진 곳에 위치
+      }
+      
+      // 화면 위쪽 경계를 넘어가는 경우 아래로 조정
+      if (y < 20) {
+        y = 20;
+      }
+      
+      // 화면 아래쪽 경계를 넘어가는 경우 위로 조정
+      if (y + previewHeight > viewportHeight - 20) {
+        y = viewportHeight - previewHeight - 20;
+      }
+      
+      setPreviewPosition({ x, y });
+    };
+
+    // 마우스 이동 이벤트 리스너 추가
+    window.addEventListener('mousemove', updatePreviewPosition);
+    
+    return () => {
+      // 이벤트 리스너 제거
+      window.removeEventListener('mousemove', updatePreviewPosition);
+    };
+  }, [activePreview]);
+
+  // 프리뷰 위치 초기화 - 마우스 호버 시 최초 위치 설정
+  const initPreviewPosition = (e: React.MouseEvent) => {
+    // 화면 크기 가져오기
+    const viewportWidth = window.innerWidth;
+    const viewportHeight = window.innerHeight;
+    
+    // 미리보기 카드 예상 크기
+    const previewWidth = 400;
+    const previewHeight = 300;
+    
+    // 마우스 커서 위치에 따라 왼쪽 또는 오른쪽에 배치
+    // 기본적으로 마우스 커서의 오른쪽에 표시
+    let x = e.clientX + 40; // 오른쪽으로 40px 떨어진 곳에 위치
+    let y = e.clientY - previewHeight / 2; // 마우스 커서 높이의 중앙에 맞춤
+    
+    // 화면 오른쪽 경계를 넘어가는 경우 왼쪽에 표시
+    if (x + previewWidth > viewportWidth - 20) {
+      x = e.clientX - previewWidth - 40; // 왼쪽으로 40px 떨어진 곳에 위치
+    }
+    
+    // 화면 위쪽 경계를 넘어가는 경우 아래로 조정
+    if (y < 20) {
+      y = 20;
+    }
+    
+    // 화면 아래쪽 경계를 넘어가는 경우 위로 조정
+    if (y + previewHeight > viewportHeight - 20) {
+      y = viewportHeight - previewHeight - 20;
+    }
+    
+    setPreviewPosition({ x, y });
+  };
+
   // 프리뷰 렌더링
   const renderPreview = () => {
     if (!activePreview) return null;
 
+    let previewTitle = '';
+    let previewContent: React.ReactNode = null;
+
     switch (activePreview) {
       case 'youtube':
-        if (!solopreneur.links.previews?.youtube) return null;
-        return (
+        previewTitle = `${solopreneur.name}'s YouTube Channel`;
+        // 미리보기 이미지가 없는 경우 기본 이미지 사용
+        const youtubePreviewImage = solopreneur.links.previews?.youtube || 
+          `https://picsum.photos/800/450?random=${solopreneur.name}-youtube`;
+        
+        previewContent = (
           <div className={styles.youtubePreview}>
             <Image
-              src={solopreneur.links.previews.youtube}
-              alt={`${solopreneur.name}'s YouTube Channel`}
+              src={youtubePreviewImage}
+              alt={previewTitle}
               width={480}
               height={270}
               className={styles.previewImage}
             />
           </div>
         );
+        break;
 
       case 'twitter':
-        if (!solopreneur.links.previews?.twitter) return null;
-        return (
+        previewTitle = `${solopreneur.name}'s Twitter Profile`;
+        // 미리보기 이미지가 없는 경우 기본 이미지 사용
+        const twitterPreviewImage = solopreneur.links.previews?.twitter || 
+          `https://picsum.photos/600/300?random=${solopreneur.name}-twitter`;
+        
+        previewContent = (
           <div className={styles.twitterPreview}>
             <Image
-              src={solopreneur.links.previews.twitter}
-              alt={`${solopreneur.name}'s Twitter Profile`}
+              src={twitterPreviewImage}
+              alt={previewTitle}
               width={480}
               height={240}
               className={styles.previewImage}
             />
           </div>
         );
+        break;
 
       case 'linkedin':
-        if (!solopreneur.links.previews?.linkedin) return null;
-        return (
+        previewTitle = `${solopreneur.name}'s LinkedIn Profile`;
+        // 미리보기 이미지가 없는 경우 기본 이미지 사용
+        const linkedinPreviewImage = solopreneur.links.previews?.linkedin || 
+          `https://picsum.photos/700/400?random=${solopreneur.name}-linkedin`;
+        
+        previewContent = (
           <div className={styles.linkedinPreview}>
             <Image
-              src={solopreneur.links.previews.linkedin}
-              alt={`${solopreneur.name}'s LinkedIn Profile`}
+              src={linkedinPreviewImage}
+              alt={previewTitle}
               width={480}
               height={270}
               className={styles.previewImage}
             />
           </div>
         );
+        break;
 
       case 'website':
         if (!solopreneur.links.website) return null;
-        return (
-          <div className={styles.previewContent}>
+        previewTitle = `${solopreneur.name}'s Website`;
+        
+        // 웹사이트 미리보기를 iframe으로 변경
+        previewContent = (
+          <div className={styles.websitePreview}>
             <iframe
-              className={styles.previewIframe}
               src={`/api/preview?url=${encodeURIComponent(solopreneur.links.website)}`}
-              width="400"
-              height="300"
-              style={{ 
-                border: 'none', 
-                borderRadius: '8px',
-                transform: 'scale(0.9)',
-                transformOrigin: 'top',
-                maxWidth: '100%',
-                backgroundColor: 'white',
-                minHeight: '400px'
-              }}
-              sandbox="allow-scripts allow-same-origin allow-popups allow-forms"
+              className={styles.websiteIframe}
+              sandbox="allow-scripts allow-same-origin"
               loading="lazy"
               referrerPolicy="no-referrer"
-              onLoad={(e) => {
-                const iframe = e.currentTarget;
-                try {
-                  iframe.contentWindow?.postMessage({ type: 'resize-iframe' }, '*');
-                } catch (error) {
-                  console.log('iframe load error handled gracefully');
-                }
-              }}
-              onError={(e) => {
-                e.currentTarget.style.display = 'none';
-                const fallback = document.createElement('div');
-                fallback.className = styles.websitePreview;
-                fallback.innerHTML = `
-                  <h3>${solopreneur.name}'s Website</h3>
-                  <p class="${styles.websiteUrl}">${solopreneur.links.website}</p>
-                  <a 
-                    href="${solopreneur.links.website}"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    class="${styles.previewButton}"
-                  >
-                    Visit Website
-                  </a>
-                `;
-                e.currentTarget.parentNode?.appendChild(fallback);
-              }}
+              title={`${solopreneur.name}'s Website Preview`}
             />
           </div>
         );
+        break;
 
       default:
         return null;
     }
+
+    return (
+      <div className={styles.previewCard}>
+        <div className={styles.previewHeader}>
+          <h3 className={styles.previewTitle}>{previewTitle}</h3>
+        </div>
+        <div className={styles.previewContent}>
+          {previewContent}
+        </div>
+      </div>
+    );
   };
 
   // 사용 가능한 링크 텍스트 생성
@@ -202,8 +281,17 @@ export default function SolopreneurCard({ solopreneur, isFirst }: Props) {
         <span 
           key={platformLower}
           className={styles.platformLink}
-          onMouseEnter={() => setActivePreview(platformLower)}
+          onMouseEnter={(e) => {
+            setActivePreview(platformLower);
+            initPreviewPosition(e);
+          }}
           onMouseLeave={() => setActivePreview(null)}
+          onClick={(e) => {
+            e.preventDefault();
+            if (solopreneur.links[platformLower as keyof typeof solopreneur.links]) {
+              window.open(solopreneur.links[platformLower as keyof typeof solopreneur.links] as string, '_blank', 'noopener,noreferrer');
+            }
+          }}
         >
           {platform}
         </span>
@@ -233,6 +321,11 @@ export default function SolopreneurCard({ solopreneur, isFirst }: Props) {
     }
   };
 
+  // Portal 컨테이너 설정
+  useEffect(() => {
+    setPortalContainer(document.body)
+  }, [])
+
   return (
     <div className={styles.card} ref={cardRef}>
       <div className={styles.cardInner}>
@@ -257,7 +350,10 @@ export default function SolopreneurCard({ solopreneur, isFirst }: Props) {
                 target="_blank"
                 rel="noopener noreferrer"
                 className={styles.link}
-                onMouseEnter={() => setActivePreview('youtube')}
+                onMouseEnter={(e) => {
+                  setActivePreview('youtube');
+                  initPreviewPosition(e);
+                }}
                 onMouseLeave={() => setActivePreview(null)}
               >
                 <svg className={styles.icon} viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -272,7 +368,10 @@ export default function SolopreneurCard({ solopreneur, isFirst }: Props) {
                 target="_blank"
                 rel="noopener noreferrer"
                 className={styles.link}
-                onMouseEnter={() => setActivePreview('twitter')}
+                onMouseEnter={(e) => {
+                  setActivePreview('twitter');
+                  initPreviewPosition(e);
+                }}
                 onMouseLeave={() => setActivePreview(null)}
               >
                 <svg className={styles.icon} viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -287,7 +386,10 @@ export default function SolopreneurCard({ solopreneur, isFirst }: Props) {
                 target="_blank"
                 rel="noopener noreferrer"
                 className={styles.link}
-                onMouseEnter={() => setActivePreview('linkedin')}
+                onMouseEnter={(e) => {
+                  setActivePreview('linkedin');
+                  initPreviewPosition(e);
+                }}
                 onMouseLeave={() => setActivePreview(null)}
               >
                 <svg className={styles.icon} viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -305,7 +407,10 @@ export default function SolopreneurCard({ solopreneur, isFirst }: Props) {
                 target="_blank"
                 rel="noopener noreferrer"
                 className={styles.link}
-                onMouseEnter={() => setActivePreview('website')}
+                onMouseEnter={(e) => {
+                  setActivePreview('website');
+                  initPreviewPosition(e);
+                }}
                 onMouseLeave={() => setActivePreview(null)}
               >
                 <svg className={styles.icon} viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -318,12 +423,24 @@ export default function SolopreneurCard({ solopreneur, isFirst }: Props) {
           <p className={styles.availableLinks}>{getAvailableLinksText()}</p>
         </div>
       </div>
-      
-      {activePreview && (
-        <div className={styles.preview}>
+
+      {/* Portal을 사용하여 미리보기를 body에 직접 렌더링 */}
+      {activePreview && portalContainer && createPortal(
+        <div 
+          className={styles.preview} 
+          style={{ 
+            top: previewPosition.y, 
+            left: previewPosition.x,
+            position: 'fixed',
+            zIndex: 9999,
+            pointerEvents: 'none' // 마우스 이벤트를 무시하여 중복 호버링 방지
+          }}
+          ref={previewRef}
+        >
           {renderPreview()}
-        </div>
+        </div>,
+        portalContainer
       )}
     </div>
-  )
+  );
 } 

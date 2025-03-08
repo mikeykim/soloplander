@@ -9,6 +9,18 @@ const nextConfig = {
       {
         protocol: 'https',
         hostname: 'd3e54v103j8qbb.cloudfront.net'
+      },
+      {
+        protocol: 'https',
+        hostname: 'seuttskwyxmznloukxog.supabase.co'
+      },
+      {
+        protocol: 'https',
+        hostname: 'randomuser.me'
+      },
+      {
+        protocol: 'https',
+        hostname: 'picsum.photos'
       }
     ],
     unoptimized: true,

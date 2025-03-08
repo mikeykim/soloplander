@@ -149,18 +149,24 @@ export default function EditSolopreneurPage({ params }: IPageProps) {
         keywords: formData.keywords.split(',').map(k => k.trim()).filter(Boolean)
       }
 
-      console.log('솔로프리너 업데이트 요청 데이터:', apiData);
+      // 리전 데이터 유효성 확인 (디버깅용)
+      if (!['USA', 'Europe', 'Asia'].includes(apiData.region)) {
+        console.warn('경고: 유효하지 않은 리전 값:', apiData.region);
+      }
+
+      console.log('솔로프리너 업데이트 요청 데이터:', JSON.stringify(apiData, null, 2));
 
       const response = await fetch(`/api/solopreneurs/${id}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
+          'Cache-Control': 'no-cache',
         },
         body: JSON.stringify(apiData),
       })
 
       const responseData = await response.json();
-      console.log('솔로프리너 업데이트 응답:', responseData);
+      console.log('솔로프리너 업데이트 응답:', JSON.stringify(responseData, null, 2));
 
       if (!response.ok) {
         throw new Error(responseData.error || 'Failed to update solopreneur')

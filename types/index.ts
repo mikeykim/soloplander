@@ -18,6 +18,7 @@ export interface IBlogPost {
 }
 
 export interface ISolopreneur {
+  id?: number;
   name: string;
   region: RegionType;
   image: string;
@@ -36,6 +37,8 @@ export interface ISolopreneur {
       linkedin?: string;
     }
   };
+  created_at?: string;
+  updated_at?: string;
 }
 
 interface IPreview {

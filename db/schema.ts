@@ -33,10 +33,20 @@ export const solopreneurPreviews = pgTable('solopreneur_previews', {
   updatedAt: timestamp('updated_at').defaultNow().notNull(),
 });
 
+// 키워드 테이블
+export const solopreneurKeywords = pgTable('solopreneur_keywords', {
+  id: serial('id').primaryKey(),
+  solopreneurId: serial('solopreneur_id').references(() => solopreneurs.id, { onDelete: 'cascade' }).notNull(),
+  keyword: varchar('keyword', { length: 100 }).notNull(),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+  updatedAt: timestamp('updated_at').defaultNow().notNull(),
+});
+
 // 관계 정의
 export const solopreneursRelations = relations(solopreneurs, ({ many }) => ({
   links: many(solopreneurLinks),
   previews: many(solopreneurPreviews),
+  keywords: many(solopreneurKeywords),
 }));
 
 export const solopreneurLinksRelations = relations(solopreneurLinks, ({ one }) => ({
@@ -49,6 +59,13 @@ export const solopreneurLinksRelations = relations(solopreneurLinks, ({ one }) =
 export const solopreneurPreviewsRelations = relations(solopreneurPreviews, ({ one }) => ({
   solopreneur: one(solopreneurs, {
     fields: [solopreneurPreviews.solopreneurId],
+    references: [solopreneurs.id],
+  }),
+}));
+
+export const solopreneurKeywordsRelations = relations(solopreneurKeywords, ({ one }) => ({
+  solopreneur: one(solopreneurs, {
+    fields: [solopreneurKeywords.solopreneurId],
     references: [solopreneurs.id],
   }),
 }));

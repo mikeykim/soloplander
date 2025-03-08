@@ -120,7 +120,7 @@ export async function GET(
     const { data: linksData, error: linksError } = await supabase
       .from('solopreneur_links')
       .select('*')
-      .eq('solopreneurId', id);
+      .eq('solopreneur_id', id);
     
     // 미리보기 이미지 조회
     const { data: previewsData, error: previewsError } = await supabase
@@ -128,9 +128,20 @@ export async function GET(
       .select('*')
       .eq('solopreneur_id', id);
     
+    // 키워드 조회
+    const { data: keywordsData, error: keywordsError } = await supabase
+      .from('solopreneur_keywords')
+      .select('*')
+      .eq('solopreneur_id', id);
+    
+    console.log(`솔로프리너 ${id} 링크:`, linksData);
+    console.log(`솔로프리너 ${id} 미리보기:`, previewsData);
+    console.log(`솔로프리너 ${id} 키워드:`, keywordsData);
+    
     // 링크 데이터 구성
     const links: any = {};
     const previews: any = {};
+    const keywords: string[] = [];
     
     if (!linksError && linksData) {
       linksData.forEach((link) => {
@@ -143,6 +154,13 @@ export async function GET(
         if (!previews[preview.platform]) {
           previews[preview.platform] = preview.image_url;
         }
+      });
+    }
+    
+    // 키워드 데이터 구성
+    if (!keywordsError && keywordsData) {
+      keywordsData.forEach((keywordObj) => {
+        keywords.push(keywordObj.keyword);
       });
     }
     
@@ -163,7 +181,7 @@ export async function GET(
     const finalData = {
       ...solopreneur,
       links,
-      keywords: [], // 키워드 기능은 추후 구현
+      keywords,
     };
     
     console.log('솔로프리너 데이터 반환:', JSON.stringify(finalData, null, 2));
@@ -239,12 +257,19 @@ export async function PUT(
     const body = await request.json();
     const { name, region, image, description, gender, links = {}, keywords = [] } = body;
     
+    console.log(`솔로프리너 ${id} 업데이트 요청 본문:`, JSON.stringify(body, null, 2));
+    
     // 필수 필드 검증
     if (!name || !region || !description || !gender) {
       return NextResponse.json(
         { error: '필수 필드가 누락되었습니다.' },
         { status: 400 }
       );
+    }
+    
+    // 리전 데이터 유효성 검증
+    if (!['USA', 'Europe', 'Asia'].includes(region)) {
+      console.warn(`경고: 솔로프리너 ${id} 업데이트 요청에 유효하지 않은 리전 값이 있습니다:`, region);
     }
     
     // Supabase 연결 테스트
@@ -272,7 +297,38 @@ export async function PUT(
       });
     }
     
+    // 현재 저장된 데이터 확인 (디버깅 용도)
+    try {
+      const { data: currentData, error: fetchError } = await supabase
+        .from('solopreneurs')
+        .select('*')
+        .eq('id', id)
+        .single();
+        
+      if (fetchError) {
+        console.error(`현재 솔로프리너 ${id} 데이터 조회 실패:`, fetchError);
+      } else if (currentData) {
+        console.log(`현재 솔로프리너 ${id} 데이터:`, JSON.stringify({
+          id: currentData.id,
+          name: currentData.name,
+          region: currentData.region,
+          gender: currentData.gender
+        }, null, 2));
+      }
+    } catch (fetchErr) {
+      console.error(`현재 데이터 조회 중 예외 발생:`, fetchErr);
+    }
+    
     // 솔로프리너 업데이트
+    console.log(`솔로프리너 ${id} 데이터 업데이트 요청:`, JSON.stringify({
+      name,
+      region,
+      image: image ? '(이미지 URL 존재)' : undefined,
+      description: description ? '(설명 존재)' : undefined,
+      gender,
+      updated_at: new Date().toISOString()
+    }, null, 2));
+    
     const { data: solopreneur, error: solopreneurError } = await supabase
       .from('solopreneurs')
       .update({
@@ -295,13 +351,20 @@ export async function PUT(
       );
     }
     
+    console.log(`솔로프리너 ${id} 업데이트 성공:`, JSON.stringify({
+      id: solopreneur.id,
+      name: solopreneur.name,
+      region: solopreneur.region,
+      gender: solopreneur.gender
+    }, null, 2));
+    
     // 링크 업데이트 (기존 링크 삭제 후 새로 추가)
     if (Object.keys(links).length > 0) {
       // 기존 링크 삭제
       const { error: deleteLinksError } = await supabase
         .from('solopreneur_links')
         .delete()
-        .eq('solopreneurId', id);
+        .eq('solopreneur_id', id);
       
       if (deleteLinksError) {
         console.error('링크 삭제 오류:', deleteLinksError);
@@ -311,12 +374,12 @@ export async function PUT(
       const platforms = ['youtube', 'twitter', 'linkedin', 'instagram', 'website'];
       
       // 새 링크 추가
-      const linkInserts: { solopreneurId: string; platform: string; url: string }[] = [];
+      const linkInserts: { solopreneur_id: string; platform: string; url: string }[] = [];
       
       for (const platform of platforms) {
         if (links[platform]) {
           linkInserts.push({
-            solopreneurId: id,
+            solopreneur_id: id,
             platform,
             url: links[platform],
           });
@@ -330,6 +393,8 @@ export async function PUT(
         
         if (insertLinksError) {
           console.error('링크 추가 오류:', insertLinksError);
+        } else {
+          console.log(`${linkInserts.length}개 링크 성공적으로 추가됨`);
         }
       }
     }
@@ -340,7 +405,7 @@ export async function PUT(
       const { error: deletePreviewsError } = await supabase
         .from('solopreneur_previews')
         .delete()
-        .eq('solopreneurId', id);
+        .eq('solopreneur_id', id);
       
       if (deletePreviewsError) {
         console.error('미리보기 이미지 삭제 오류:', deletePreviewsError);
@@ -350,17 +415,19 @@ export async function PUT(
       const platforms = ['youtube', 'twitter', 'linkedin', 'instagram', 'website'];
       
       // 새 미리보기 이미지 추가
-      const previewInserts: { solopreneurId: string; platform: string; imageUrl: string }[] = [];
+      const previewInserts: { solopreneur_id: string; platform: string; image_url: string }[] = [];
       
       for (const platform of platforms) {
         if (links.previews[platform]) {
           previewInserts.push({
-            solopreneurId: id,
+            solopreneur_id: id,
             platform,
-            imageUrl: links.previews[platform],
+            image_url: links.previews[platform],
           });
         }
       }
+      
+      console.log('추가할 미리보기 이미지:', JSON.stringify(previewInserts, null, 2));
       
       if (previewInserts.length > 0) {
         const { error: insertPreviewsError } = await supabase
@@ -369,6 +436,41 @@ export async function PUT(
         
         if (insertPreviewsError) {
           console.error('미리보기 이미지 추가 오류:', insertPreviewsError);
+        } else {
+          console.log(`${previewInserts.length}개 미리보기 이미지 성공적으로 추가됨`);
+        }
+      }
+    }
+    
+    // 키워드 업데이트 (기존 키워드 삭제 후 새로 추가)
+    if (keywords && keywords.length > 0) {
+      // 기존 키워드 삭제
+      const { error: deleteKeywordsError } = await supabase
+        .from('solopreneur_keywords')
+        .delete()
+        .eq('solopreneur_id', id);
+      
+      if (deleteKeywordsError) {
+        console.error('키워드 삭제 오류:', deleteKeywordsError);
+      }
+      
+      // 새 키워드 추가
+      const keywordInserts = keywords.map(keyword => ({
+        solopreneur_id: id,
+        keyword
+      }));
+      
+      console.log('추가할 키워드:', JSON.stringify(keywordInserts, null, 2));
+      
+      if (keywordInserts.length > 0) {
+        const { error: insertKeywordsError } = await supabase
+          .from('solopreneur_keywords')
+          .insert(keywordInserts);
+        
+        if (insertKeywordsError) {
+          console.error('키워드 추가 오류:', insertKeywordsError);
+        } else {
+          console.log(`${keywordInserts.length}개 키워드 성공적으로 추가됨`);
         }
       }
     }

@@ -58,7 +58,13 @@ export async function GET() {
   // 환경 변수가 설정되지 않은 경우 즉시 임시 데이터 반환
   if (!isSupabaseConfigured) {
     console.warn('Supabase 환경 변수가 설정되지 않았습니다. 임시 데이터를 사용합니다.');
-    return NextResponse.json({ solopreneurs: tempSolopreneurs });
+    return NextResponse.json({ solopreneurs: tempSolopreneurs }, {
+      headers: {
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
+        'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+      }
+    });
   }
   
   try {
@@ -67,8 +73,16 @@ export async function GET() {
     
     if (!connectionTest.success) {
       console.log('Supabase 연결 실패, 임시 데이터 반환:', connectionTest.error);
-      return NextResponse.json({ solopreneurs: tempSolopreneurs });
+      return NextResponse.json({ solopreneurs: tempSolopreneurs }, {
+        headers: {
+          'Access-Control-Allow-Origin': '*',
+          'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
+          'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+        }
+      });
     }
+    
+    console.log('Supabase 연결 성공, 실제 데이터 조회 시작');
     
     // 실제 데이터베이스에서 솔로프리너 조회
     const { data: solopreneursData, error: solopreneursError } = await supabase
@@ -78,8 +92,16 @@ export async function GET() {
     
     if (solopreneursError) {
       console.error('솔로프리너 조회 오류:', solopreneursError);
-      return NextResponse.json({ solopreneurs: tempSolopreneurs });
+      return NextResponse.json({ solopreneurs: tempSolopreneurs }, {
+        headers: {
+          'Access-Control-Allow-Origin': '*',
+          'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
+          'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+        }
+      });
     }
+    
+    console.log(`솔로프리너 ${solopreneursData.length}명 조회 성공`);
     
     // 각 솔로프리너의 링크와 미리보기 이미지 조회
     const solopreneursWithLinks = await Promise.all(
@@ -96,9 +118,16 @@ export async function GET() {
           .select('*')
           .eq('solopreneur_id', solopreneur.id);
         
+        // 키워드 조회
+        const { data: keywordsData, error: keywordsError } = await supabase
+          .from('solopreneur_keywords')
+          .select('*')
+          .eq('solopreneur_id', solopreneur.id);
+        
         // 링크 데이터 구성
         const links: any = {};
         const previews: any = {};
+        const keywords: string[] = [];
         
         if (!linksError && linksData) {
           linksData.forEach((link) => {
@@ -111,6 +140,13 @@ export async function GET() {
             if (!previews[preview.platform]) {
               previews[preview.platform] = preview.image_url;
             }
+          });
+        }
+        
+        // 키워드 데이터 구성
+        if (!keywordsError && keywordsData) {
+          keywordsData.forEach((keywordObj) => {
+            keywords.push(keywordObj.keyword);
           });
         }
         
@@ -129,18 +165,69 @@ export async function GET() {
         
         console.log(`솔로프리너 ${solopreneur.id} 미리보기:`, links.previews);
         
-        return {
+        // 최종 데이터 구성
+        const finalSolopreneur = {
           ...solopreneur,
           links,
-          keywords: [], // 키워드 기능은 추후 구현
+          keywords,
         };
+
+        // 리전 데이터 로깅 (디버깅용)
+        console.log(`솔로프리너 ${finalSolopreneur.id} - ${finalSolopreneur.name}의 리전:`, finalSolopreneur.region);
+        
+        // 리전이 없거나 유효하지 않은 경우 경고
+        if (!finalSolopreneur.region || !['USA', 'Europe', 'Asia'].includes(finalSolopreneur.region)) {
+          console.warn(`경고: 솔로프리너 ${finalSolopreneur.id} - ${finalSolopreneur.name}의 리전이 유효하지 않습니다:`, finalSolopreneur.region);
+        }
+
+        return finalSolopreneur;
       })
     );
     
-    return NextResponse.json({ solopreneurs: solopreneursWithLinks });
+    // 변환이 완료된 결과 반환
+    console.log(`변환된 솔로프리너 총 ${solopreneursWithLinks.length}명`);
+    
+    // 리전별 통계 출력
+    const regionCount = {
+      USA: solopreneursWithLinks.filter(s => s.region === 'USA').length,
+      Europe: solopreneursWithLinks.filter(s => s.region === 'Europe').length,
+      Asia: solopreneursWithLinks.filter(s => s.region === 'Asia').length,
+      Other: solopreneursWithLinks.filter(s => !['USA', 'Europe', 'Asia'].includes(s.region)).length
+    };
+    
+    console.log('리전별 통계:', regionCount);
+    
+    // 데이터의 첫 몇 항목 샘플 출력 (디버깅용)
+    if (solopreneursWithLinks.length > 0) {
+      console.log('솔로프리너 데이터 샘플 (첫 3개):', 
+        solopreneursWithLinks.slice(0, 3).map(s => ({
+          id: s.id,
+          name: s.name,
+          region: s.region || 'undefined'
+        }))
+      );
+    }
+    
+    return NextResponse.json({ solopreneurs: solopreneursWithLinks }, {
+      headers: {
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
+        'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+        'Cache-Control': 'no-cache, no-store, must-revalidate',
+        'Pragma': 'no-cache',
+        'Expires': '0',
+        'Content-Type': 'application/json'
+      }
+    });
   } catch (error) {
-    console.error('솔로프리너 API 오류:', error);
-    return NextResponse.json({ solopreneurs: tempSolopreneurs });
+    console.error('솔로프리너 목록 조회 중 오류:', error);
+    return NextResponse.json({ solopreneurs: tempSolopreneurs }, {
+      headers: {
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
+        'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+      }
+    });
   }
 }
 
@@ -261,7 +348,7 @@ export async function POST(request: NextRequest) {
       if (links[platform]) {
         linkPromises.push(
           supabase.from('solopreneur_links').insert({
-            solopreneurId: solopreneur.id,
+            solopreneur_id: solopreneur.id,
             platform,
             url: links[platform],
           })
@@ -275,17 +362,23 @@ export async function POST(request: NextRequest) {
         if (links.previews[platform]) {
           previewPromises.push(
             supabase.from('solopreneur_previews').insert({
-              solopreneurId: solopreneur.id,
+              solopreneur_id: solopreneur.id,
               platform,
-              imageUrl: links.previews[platform],
+              image_url: links.previews[platform],
             })
           );
         }
       }
     }
     
-    // 모든 프로미스 실행
-    await Promise.all([...linkPromises, ...previewPromises]);
+    // 모든 프로미스 실행 및 결과 로깅
+    const results = await Promise.all([...linkPromises, ...previewPromises]);
+    console.log(`솔로프리너 ${solopreneur.id} 링크/미리보기 추가 결과:`, 
+      results.map((r, i) => i < linkPromises.length ? 
+        `링크 ${i+1}: ${r.error ? '실패' : '성공'}` : 
+        `미리보기 ${i-linkPromises.length+1}: ${r.error ? '실패' : '성공'}`
+      )
+    );
     
     return NextResponse.json({
       ...solopreneur,

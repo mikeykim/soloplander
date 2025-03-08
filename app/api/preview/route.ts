@@ -30,15 +30,13 @@ export async function GET(request: Request) {
       
       const html = await response.text();
       
-      // Flutter 웹앱인지 확인
+      // 특정 사이트 체크 (LinkedIn, Flutter 앱 등)
       const isFlutterApp = html.includes('flutter.js') || html.includes('_flutter');
-      // LinkedIn 프로필인지 확인
       const isLinkedIn = validUrl.includes('linkedin.com');
-      // Simple.ink 웹사이트인지 확인
       const isSimpleInk = validUrl.includes('simple.ink');
       
       if (isFlutterApp || isLinkedIn || isSimpleInk) {
-        // 특정 사이트는 이미지로 대체
+        // 특정 사이트는 간단한 미리보기로 대체
         return new NextResponse(
           `<html>
             <head>
@@ -48,61 +46,65 @@ export async function GET(request: Request) {
                   margin: 0;
                   padding: 0;
                   background: white;
+                  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
                   display: flex;
                   flex-direction: column;
                   align-items: center;
                   justify-content: center;
                   height: 100vh;
-                  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+                  overflow: hidden;
                 }
-                .website-info {
+                .container {
                   text-align: center;
                   padding: 1rem;
+                  max-width: 100%;
                 }
-                .website-title {
-                  font-size: 1.2rem;
+                .title {
+                  font-size: 1.1rem;
                   font-weight: 600;
                   margin-bottom: 0.5rem;
                   color: #333;
                 }
-                .website-url {
-                  font-size: 0.9rem;
+                .url {
+                  font-size: 0.8rem;
                   color: #666;
                   margin-bottom: 1rem;
+                  word-break: break-all;
                 }
-                .visit-button {
-                  display: inline-block;
-                  padding: 0.5rem 1rem;
-                  background: #007bff;
-                  color: white;
-                  border-radius: 4px;
-                  text-decoration: none;
-                  font-weight: 500;
+                .icon {
+                  width: 48px;
+                  height: 48px;
+                  margin-bottom: 1rem;
+                  color: #007bff;
                 }
               </style>
             </head>
             <body>
-              <div class="website-info">
-                <div class="website-title">Website Preview</div>
-                <div class="website-url">${validUrl}</div>
-                <a href="${validUrl}" target="_blank" class="visit-button">Visit Website</a>
+              <div class="container">
+                <svg class="icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <circle cx="12" cy="12" r="10"></circle>
+                  <line x1="2" y1="12" x2="22" y2="12"></line>
+                  <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
+                </svg>
+                <div class="title">Website Preview</div>
+                <div class="url">${validUrl}</div>
               </div>
             </body>
           </html>`,
           {
             headers: {
               'Content-Type': 'text/html',
-              'Access-Control-Allow-Origin': '*'
+              'Access-Control-Allow-Origin': '*',
+              'X-Frame-Options': 'SAMEORIGIN'
             }
           }
         );
       }
 
-      // viewport 메타 태그와 기본 스타일 추가
+      // 웹페이지 HTML 수정하여 iframe에서 보기 좋게 만들기
       const modifiedHtml = html.replace(
         /<head>/i,
         `<head>
-          <base href="${validUrl}" />
           <meta name="viewport" content="width=device-width, initial-scale=1">
           <style>
             html, body {
@@ -113,7 +115,7 @@ export async function GET(request: Request) {
               overflow: auto;
             }
             body {
-              transform: scale(0.9);
+              transform: scale(0.95);
               transform-origin: top left;
               background: white;
             }
@@ -127,7 +129,16 @@ export async function GET(request: Request) {
             .gdpr-banner,
             .consent-banner,
             .popup-overlay,
-            .modal-backdrop {
+            .modal-backdrop,
+            .cookie-policy,
+            .privacy-policy,
+            .ads-container,
+            #onetrust-consent-sdk,
+            .overlay,
+            #consent-dialog,
+            #cookie-notice,
+            .cookie-dialog,
+            .cookie-law-info-bar {
               display: none !important;
             }
           </style>
@@ -138,18 +149,10 @@ export async function GET(request: Request) {
               return true;
             });
             
-            // iframe 리사이징
-            window.addEventListener('message', function(e) {
-              if (e.data.type === 'resize-iframe') {
-                const height = document.documentElement.scrollHeight;
-                window.parent.postMessage({ type: 'iframe-height', height }, '*');
-              }
-            });
-            
-            // 로드 완료 시 부모에게 알림
-            window.addEventListener('load', function() {
-              window.parent.postMessage({ type: 'iframe-loaded' }, '*');
-            });
+            // 위험한 API 차단
+            window.ethereum = undefined;
+            window.solana = undefined;
+            window.phantom = undefined;
           </script>`
       );
       
@@ -160,14 +163,19 @@ export async function GET(request: Request) {
           'X-Frame-Options': 'SAMEORIGIN',
           'Content-Security-Policy': `
             default-src * 'unsafe-inline' 'unsafe-eval' data: blob:;
-            style-src * 'self' 'unsafe-inline' https: http:;
-            style-src-elem * 'self' 'unsafe-inline' https: http:;
-            font-src * data: https: http:;
-            img-src * data: blob: https: http:;
             script-src * 'self' 'unsafe-inline' 'unsafe-eval';
-            frame-ancestors *;
-          `.replace(/\s+/g, ' ').trim(),
-          'Permissions-Policy': 'interest-cohort=()'
+            style-src * 'self' 'unsafe-inline';
+            img-src * data: blob:;
+            connect-src *;
+            font-src * data:;
+            object-src 'none';
+            media-src *;
+            frame-src *;
+            worker-src blob: data:;
+            form-action 'self';
+            base-uri 'self';
+            frame-ancestors 'self';
+          `.replace(/\s+/g, ' ').trim()
         }
       });
     } catch (fetchError) {
@@ -211,15 +219,6 @@ export async function GET(request: Request) {
                 margin-bottom: 1rem;
                 word-break: break-all;
               }
-              .visit-button {
-                display: inline-block;
-                padding: 0.5rem 1rem;
-                background: #007bff;
-                color: white;
-                border-radius: 4px;
-                text-decoration: none;
-                font-weight: 500;
-              }
             </style>
           </head>
           <body>
@@ -227,7 +226,6 @@ export async function GET(request: Request) {
               <div class="error-title">Website Preview Unavailable</div>
               <div class="error-message">Could not load preview for this website</div>
               <div class="website-url">${validUrl}</div>
-              <a href="${validUrl}" target="_blank" class="visit-button">Visit Website</a>
             </div>
           </body>
         </html>`,
