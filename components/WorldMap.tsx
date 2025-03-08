@@ -2,8 +2,8 @@
 
 import Image from 'next/image'
 import styles from './WorldMap.module.css'
-import { useState, useMemo } from 'react'
-import { getSolopreneursByRegion } from '@/utils/solopreneurs'
+import { useState, useMemo, useEffect } from 'react'
+import { getSolopreneursByRegion, fetchSolopreneursByRegion } from '@/utils/solopreneurs'
 import SolopreneurCard from './SolopreneurCard'
 import RegionDescription from './RegionDescription'
 import type { RegionType, ISolopreneur } from '@/types'
@@ -59,6 +59,57 @@ export default function WorldMap() {
   const [selectedRegion, setSelectedRegion] = useState<'america' | 'europe' | 'asia' | null>(null)
   const [searchTerm, setSearchTerm] = useState('')
   const [selectedKeywords, setSelectedKeywords] = useState<string[]>([])
+  const [solopreneursData, setSolopreneursData] = useState<Record<RegionType, ISolopreneur[]>>({
+    'USA': [],
+    'Europe': [],
+    'Asia': []
+  })
+  const [isLoading, setIsLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+
+  // API에서 모든 지역의 솔로프리너 데이터 가져오기
+  useEffect(() => {
+    const fetchAllRegionsData = async () => {
+      setIsLoading(true);
+      setError(null);
+
+      try {
+        // 모든 지역의 데이터를 병렬로 가져오기
+        const [usaData, europeData, asiaData] = await Promise.all([
+          fetchSolopreneursByRegion('USA'),
+          fetchSolopreneursByRegion('Europe'),
+          fetchSolopreneursByRegion('Asia')
+        ]);
+
+        console.log('API 데이터 로드됨:', {
+          USA: usaData.length,
+          Europe: europeData.length,
+          Asia: asiaData.length
+        });
+
+        // 모든 지역의 데이터를 상태에 저장
+        setSolopreneursData({
+          'USA': usaData,
+          'Europe': europeData,
+          'Asia': asiaData
+        });
+      } catch (err) {
+        console.error('솔로프리너 데이터 가져오기 오류:', err);
+        setError('데이터를 불러오는 중 오류가 발생했습니다.');
+        
+        // 오류 발생 시 하드코딩된 데이터 사용
+        setSolopreneursData({
+          'USA': getSolopreneursByRegion('USA'),
+          'Europe': getSolopreneursByRegion('Europe'),
+          'Asia': getSolopreneursByRegion('Asia')
+        });
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchAllRegionsData();
+  }, []);
 
   const handleRegionClick = (region: 'america' | 'europe' | 'asia') => {
     setSelectedRegion(prev => prev === region ? null : region)
@@ -79,7 +130,13 @@ export default function WorldMap() {
   const filteredSolopreneurs = useMemo(() => {
     if (!selectedRegion) return []
 
-    let solopreneurs = getSolopreneursByRegion(regionMap[selectedRegion] as RegionType)
+    // API에서 가져온 데이터 사용
+    let solopreneurs = solopreneursData[regionMap[selectedRegion] as RegionType];
+
+    // API 데이터가 없는 경우 하드코딩된 데이터 사용
+    if (!solopreneurs || solopreneurs.length === 0) {
+      solopreneurs = getSolopreneursByRegion(regionMap[selectedRegion] as RegionType);
+    }
 
     // 검색어로 필터링
     if (searchTerm.trim()) {
@@ -98,8 +155,17 @@ export default function WorldMap() {
       })
     }
 
-    return solopreneurs
-  }, [selectedRegion, searchTerm, selectedKeywords])
+    // 솔로프리너를 생성일 기준으로 정렬 (오래된 순)
+    // 이렇게 하면 최근에 추가된 솔로프리너가 리스트 하단에 표시됨
+    return [...solopreneurs].sort((a, b) => {
+      // created_at 필드가 있으면 그것을 기준으로 정렬
+      if (a.created_at && b.created_at) {
+        return new Date(a.created_at).getTime() - new Date(b.created_at).getTime();
+      }
+      // created_at이 없으면 원래 순서 유지
+      return 0;
+    });
+  }, [selectedRegion, searchTerm, selectedKeywords, solopreneursData])
 
   // 선택된 지역에 대한 맵 아이템 렌더링
   const renderSelectedRegionMap = () => {
@@ -175,6 +241,7 @@ export default function WorldMap() {
         )}
       </div>
 
+      {/* 지도를 클릭했을 때만 이 부분을 표시 - Featured Solopreneurs 섹션 제거 */}
       {selectedRegion && (
         <>
           {/* 검색 및 필터 섹션 */}
@@ -201,11 +268,15 @@ export default function WorldMap() {
           </div>
 
           <div className={styles.regionContent}>
-            {filteredSolopreneurs.length > 0 ? (
+            {isLoading ? (
+              <div className={styles.loading}>Loading solopreneurs data...</div>
+            ) : error ? (
+              <div className={styles.error}>{error}</div>
+            ) : filteredSolopreneurs.length > 0 ? (
               <div className={styles.solopreneursGrid}>
                 {filteredSolopreneurs.map((solopreneur, index) => (
                   <SolopreneurCard
-                    key={solopreneur.name}
+                    key={`${solopreneur.id || ''}-${solopreneur.name}-${index}`}
                     solopreneur={solopreneur}
                     isFirst={index === 0}
                   />

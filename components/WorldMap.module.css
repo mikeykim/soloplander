@@ -295,4 +295,38 @@
     margin-bottom: 1.5rem;
     padding: 0 1rem;
   }
+}
+
+.featuredTitle {
+  font-size: 2rem;
+  font-weight: 600;
+  text-align: center;
+  margin-top: 2rem;
+  margin-bottom: 1rem;
+  color: #333;
+}
+
+.allSolopreneursGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 2rem;
+  margin-top: 2rem;
+  width: 100%;
+  padding: 0 1rem;
+}
+
+.loading {
+  text-align: center;
+  padding: 2rem;
+  font-size: 1.2rem;
+  color: #666;
+}
+
+.error {
+  text-align: center;
+  padding: 2rem;
+  font-size: 1.2rem;
+  color: #e53e3e;
+  background-color: #fff5f5;
+  border-radius: 0.5rem;
 } 

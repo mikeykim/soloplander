@@ -333,8 +333,8 @@ export default function SolopreneurCard({ solopreneur, isFirst }: Props) {
           <Image
             src={solopreneur.image}
             alt={solopreneur.name}
-            width={120}
-            height={120}
+            width={100}
+            height={100}
             className={styles.image}
           />
         </div>

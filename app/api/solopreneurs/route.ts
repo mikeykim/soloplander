@@ -88,7 +88,7 @@ export async function GET() {
     const { data: solopreneursData, error: solopreneursError } = await supabase
       .from('solopreneurs')
       .select('*')
-      .order('created_at', { ascending: false });
+      .order('created_at', { ascending: true });
     
     if (solopreneursError) {
       console.error('솔로프리너 조회 오류:', solopreneursError);
@@ -97,6 +97,7 @@ export async function GET() {
           'Access-Control-Allow-Origin': '*',
           'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
           'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+          'Cache-Control': 'no-cache, no-store, must-revalidate'
         }
       });
     }

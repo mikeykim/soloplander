@@ -53,17 +53,25 @@ export async function fetchSolopreneursByRegion(region: RegionType): Promise<ISo
       return solopreneur.region === region;
     });
     
-    console.log(`${region} 리전 솔로프리너 ${filtered.length}명 필터링됨`);
+    // 생성일 기준으로 오래된 순 정렬 (최신 추가된 것이 밑으로)
+    const sorted = [...filtered].sort((a: ISolopreneur, b: ISolopreneur) => {
+      if (a.created_at && b.created_at) {
+        return new Date(a.created_at).getTime() - new Date(b.created_at).getTime();
+      }
+      return 0;
+    });
     
-    if (filtered.length === 0) {
+    console.log(`${region} 리전 솔로프리너 ${sorted.length}명 필터링됨 (생성일 기준 정렬)`);
+    
+    if (sorted.length === 0) {
       console.log(`${region} 리전에 솔로프리너가 없음, 첫 번째 몇 명의 데이터:`, 
         data.solopreneurs.slice(0, 3).map((s: any) => ({ id: s.id, name: s.name, region: s.region })));
     }
     
-    return filtered;
+    return sorted;
   } catch (error) {
     console.error('솔로프리너 데이터 가져오기 오류:', error);
     // 오류 발생 시 하드코딩된 데이터 사용
-    return solopreneursData.filter(solopreneur => solopreneur.region === region);
+    return getSolopreneursByRegion(region);
   }
 } 

@@ -1,6 +1,4 @@
 import { Metadata } from 'next';
-import Link from 'next/link';
-import Image from 'next/image';
 import HeroSection from '@/components/HeroSection';
 import WorldMap from '@/components/WorldMap';
 import NewsletterSignup from '@/components/NewsletterSignup';
@@ -13,9 +11,18 @@ export const metadata: Metadata = {
 
 export default function Home() {
   return (
-    <main>
+    <main className={styles.main}>
       <HeroSection />
-      <WorldMap />
+      <section className={styles.solopreneursSection}>
+        <div className={styles.sectionContainer}>
+          <h2 className={styles.sectionTitle}>Discover Solopreneurs</h2>
+          <p className={styles.sectionDescription}>
+            Explore our curated collection of successful solopreneurs from around the world.
+            Get inspired by their stories and learn from their experiences.
+          </p>
+          <WorldMap />
+        </div>
+      </section>
       <NewsletterSignup />
     </main>
   );
