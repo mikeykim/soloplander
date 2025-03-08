@@ -11,19 +11,29 @@ interface IPageProps {
   }
 }
 
+/**
+ * URL 경로 매개변수와 실제 지역 타입 간의 매핑
+ */
 const regionMap = {
   america: 'USA',
   europe: 'Europe',
   asia: 'Asia'
 } as const
 
+/**
+ * 각 지역에 대한 설명 텍스트
+ */
 const descriptions = {
   america: "In the land of endless possibilities, these remarkable individuals craft their American dreams - one vision, one passion, one success story at a time.",
   europe: "From historic cobblestone streets to modern digital spaces, European solopreneurs blend timeless craftsmanship with innovative spirit to redefine entrepreneurship with distinctive flair.",
   asia: "Bridging ancient wisdom with future vision, Asian solopreneurs are painting tomorrow's business landscape with bold strokes of innovation and cultural heritage."
 } as const
 
+/**
+ * 지역별 솔로프리너 페이지 컴포넌트
+ */
 export default async function RegionPage({ params }: IPageProps) {
+  // 유효하지 않은 지역 경로 처리
   if (!regionMap[params.region as keyof typeof regionMap]) {
     notFound()
   }
@@ -35,7 +45,7 @@ export default async function RegionPage({ params }: IPageProps) {
   console.log('사용 중인 API URL:', apiUrl);
   console.log('현재 리전:', region);
   
-  // API 데이터와 하드코딩된 데이터 모두 가져오기
+  // API 데이터와 하드코딩된 데이터 처리
   let apiSolopreneurs: ISolopreneur[] = [];
   let hardcodedSolopreneurs: ISolopreneur[] = [];
   
@@ -58,10 +68,8 @@ export default async function RegionPage({ params }: IPageProps) {
   
   console.log(`최종적으로 ${region} 솔로프리너 ${finalSolopreneurs.length}명 표시 예정 (출처: ${apiSolopreneurs.length > 0 ? 'API' : '하드코딩'})`);
   
-  // 각 솔로프리너의 리전 출력 (디버깅용)
-  finalSolopreneurs.forEach(s => {
-    console.log(`솔로프리너 ${s.name} 리전:`, s.region);
-  });
+  // 데이터 유효성 검증
+  const validSolopreneurs = finalSolopreneurs.filter(s => s && s.name && s.region);
   
   return (
     <div className={styles.container}>
@@ -70,7 +78,7 @@ export default async function RegionPage({ params }: IPageProps) {
         description={descriptions[params.region as keyof typeof descriptions]}
       />
       <div className={styles.grid}>
-        {finalSolopreneurs.map((solopreneur, index) => (
+        {validSolopreneurs.map((solopreneur, index) => (
           <SolopreneurCard 
             key={`${solopreneur.id || ''}-${solopreneur.name}-${index}`} 
             solopreneur={solopreneur}
@@ -86,6 +94,9 @@ export default async function RegionPage({ params }: IPageProps) {
 export const dynamic = 'force-dynamic';
 export const revalidate = 0;
 
+/**
+ * 정적 경로 매개변수 생성
+ */
 export function generateStaticParams() {
   return [
     { region: 'america' },

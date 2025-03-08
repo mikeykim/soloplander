@@ -11,6 +11,47 @@ interface Props {
   isFirst?: boolean
 }
 
+// 미리보기 위치 계산 함수 추출 (중복 제거)
+interface ICalculatePreviewPosition {
+  clientX: number;
+  clientY: number;
+  previewWidth?: number;
+  previewHeight?: number;
+}
+
+const calculatePreviewPosition = ({
+  clientX,
+  clientY,
+  previewWidth = 400,
+  previewHeight = 300
+}: ICalculatePreviewPosition) => {
+  // 화면 크기 가져오기
+  const viewportWidth = window.innerWidth;
+  const viewportHeight = window.innerHeight;
+  
+  // 마우스 커서 위치에 따라 왼쪽 또는 오른쪽에 배치
+  // 기본적으로 마우스 커서의 오른쪽에 표시
+  let x = clientX + 40; // 오른쪽으로 40px 떨어진 곳에 위치
+  let y = clientY - previewHeight / 2; // 마우스 커서 높이의 중앙에 맞춤
+  
+  // 화면 오른쪽 경계를 넘어가는 경우 왼쪽에 표시
+  if (x + previewWidth > viewportWidth - 20) {
+    x = clientX - previewWidth - 40; // 왼쪽으로 40px 떨어진 곳에 위치
+  }
+  
+  // 화면 위쪽 경계를 넘어가는 경우 아래로 조정
+  if (y < 20) {
+    y = 20;
+  }
+  
+  // 화면 아래쪽 경계를 넘어가는 경우 위로 조정
+  if (y + previewHeight > viewportHeight - 20) {
+    y = viewportHeight - previewHeight - 20;
+  }
+  
+  return { x, y };
+};
+
 export default function SolopreneurCard({ solopreneur, isFirst }: Props) {
   const [activePreview, setActivePreview] = useState<string | null>(null)
   const cardRef = useRef<HTMLDivElement>(null)
@@ -89,35 +130,11 @@ export default function SolopreneurCard({ solopreneur, isFirst }: Props) {
 
     // 마우스 움직임에 따라 미리보기 위치 업데이트
     const updatePreviewPosition = (e: MouseEvent) => {
-      // 화면 크기 가져오기
-      const viewportWidth = window.innerWidth;
-      const viewportHeight = window.innerHeight;
-      
-      // 미리보기 카드 예상 크기
-      const previewWidth = 400;
-      const previewHeight = 300;
-      
-      // 마우스 커서 위치에 따라 왼쪽 또는 오른쪽에 배치
-      // 기본적으로 마우스 커서의 오른쪽에 표시
-      let x = e.clientX + 40; // 오른쪽으로 40px 떨어진 곳에 위치
-      let y = e.clientY - previewHeight / 2; // 마우스 커서 높이의 중앙에 맞춤
-      
-      // 화면 오른쪽 경계를 넘어가는 경우 왼쪽에 표시
-      if (x + previewWidth > viewportWidth - 20) {
-        x = e.clientX - previewWidth - 40; // 왼쪽으로 40px 떨어진 곳에 위치
-      }
-      
-      // 화면 위쪽 경계를 넘어가는 경우 아래로 조정
-      if (y < 20) {
-        y = 20;
-      }
-      
-      // 화면 아래쪽 경계를 넘어가는 경우 위로 조정
-      if (y + previewHeight > viewportHeight - 20) {
-        y = viewportHeight - previewHeight - 20;
-      }
-      
-      setPreviewPosition({ x, y });
+      const position = calculatePreviewPosition({
+        clientX: e.clientX, 
+        clientY: e.clientY
+      });
+      setPreviewPosition(position);
     };
 
     // 마우스 이동 이벤트 리스너 추가
@@ -131,35 +148,11 @@ export default function SolopreneurCard({ solopreneur, isFirst }: Props) {
 
   // 프리뷰 위치 초기화 - 마우스 호버 시 최초 위치 설정
   const initPreviewPosition = (e: React.MouseEvent) => {
-    // 화면 크기 가져오기
-    const viewportWidth = window.innerWidth;
-    const viewportHeight = window.innerHeight;
-    
-    // 미리보기 카드 예상 크기
-    const previewWidth = 400;
-    const previewHeight = 300;
-    
-    // 마우스 커서 위치에 따라 왼쪽 또는 오른쪽에 배치
-    // 기본적으로 마우스 커서의 오른쪽에 표시
-    let x = e.clientX + 40; // 오른쪽으로 40px 떨어진 곳에 위치
-    let y = e.clientY - previewHeight / 2; // 마우스 커서 높이의 중앙에 맞춤
-    
-    // 화면 오른쪽 경계를 넘어가는 경우 왼쪽에 표시
-    if (x + previewWidth > viewportWidth - 20) {
-      x = e.clientX - previewWidth - 40; // 왼쪽으로 40px 떨어진 곳에 위치
-    }
-    
-    // 화면 위쪽 경계를 넘어가는 경우 아래로 조정
-    if (y < 20) {
-      y = 20;
-    }
-    
-    // 화면 아래쪽 경계를 넘어가는 경우 위로 조정
-    if (y + previewHeight > viewportHeight - 20) {
-      y = viewportHeight - previewHeight - 20;
-    }
-    
-    setPreviewPosition({ x, y });
+    const position = calculatePreviewPosition({
+      clientX: e.clientX, 
+      clientY: e.clientY
+    });
+    setPreviewPosition(position);
   };
 
   // 프리뷰 렌더링
