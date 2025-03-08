@@ -5,21 +5,22 @@ export function getSolopreneursByRegion(region: RegionType): ISolopreneur[] {
   return solopreneursData.filter(solopreneur => solopreneur.region === region)
 } 
 
-// API URL 상수 정의 - 기본값을 3000으로 변경
-const API_URL = process.env.NEXT_PUBLIC_API_URL || process.env.VERCEL_URL || 'http://localhost:3000'
+// API URL 상수 정의 - 상대 경로 사용
+const API_URL = process.env.NEXT_PUBLIC_API_URL || process.env.VERCEL_URL || ''
 
 export async function fetchSolopreneursByRegion(region: RegionType): Promise<ISolopreneur[]> {
   console.log(`fetchSolopreneursByRegion 호출됨: 리전 = ${region}, API_URL = ${API_URL}`);
   
   try {
-    // HTTP 또는 HTTPS 확인
-    const baseUrl = API_URL.startsWith('http') ? API_URL : `http://${API_URL}`;
-    const fullUrl = `${baseUrl}/api/solopreneurs`;
+    // 상대 URL 사용
+    const url = API_URL 
+      ? `${API_URL.startsWith('http') ? API_URL : `https://${API_URL}`}/api/solopreneurs` 
+      : `/api/solopreneurs`;
     
-    console.log(`API 요청 URL: ${fullUrl}`);
+    console.log(`API 요청 URL: ${url}`);
     
     // 절대 URL 사용
-    const response = await fetch(fullUrl, { 
+    const response = await fetch(url, { 
       cache: 'no-store', // 캐시 비활성화
       next: { revalidate: 0 }, // 항상 최신 데이터 사용
       headers: {

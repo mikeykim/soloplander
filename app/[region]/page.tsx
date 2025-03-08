@@ -31,7 +31,7 @@ export default async function RegionPage({ params }: IPageProps) {
   const region = regionMap[params.region] as RegionType
   
   // 환경 변수 체크와 로깅
-  const apiUrl = process.env.NEXT_PUBLIC_API_URL || process.env.VERCEL_URL || 'http://localhost:3000'
+  const apiUrl = process.env.NEXT_PUBLIC_API_URL || process.env.VERCEL_URL || ''
   console.log('사용 중인 API URL:', apiUrl);
   console.log('현재 리전:', region);
   
