@@ -2,7 +2,8 @@
 
 import { ReactNode } from 'react'
 import Link from 'next/link'
-import { useRouter } from 'next/navigation'
+import { useRouter, usePathname } from 'next/navigation'
+import { LayoutDashboard, Users, LogOut, Home } from 'lucide-react'
 
 interface IAdminLayoutProps {
   children: ReactNode
@@ -10,6 +11,7 @@ interface IAdminLayoutProps {
 
 export default function AdminLayout({ children }: IAdminLayoutProps) {
   const router = useRouter()
+  const pathname = usePathname()
   
   const handleLogout = async () => {
     try {
@@ -31,110 +33,74 @@ export default function AdminLayout({ children }: IAdminLayoutProps) {
   }
   
   return (
-    <div className="admin-layout">
-      <aside className="admin-sidebar">
-        <div className="sidebar-header">
-          <h1>관리자 대시보드</h1>
+    <div className="flex min-h-screen bg-slate-50 font-sans antialiased">
+      {/* 사이드바 */}
+      <aside className="w-64 bg-slate-900 text-white flex flex-col">
+        <div className="p-5 border-b border-slate-700/50">
+          <div className="flex items-center space-x-2">
+            <LayoutDashboard className="h-6 w-6 text-indigo-400" />
+            <h1 className="text-lg font-bold">관리자 패널</h1>
+          </div>
         </div>
         
-        <nav className="sidebar-nav">
-          <ul>
+        <nav className="flex-1 p-5">
+          <div className="mb-2 text-xs font-semibold text-slate-400 uppercase tracking-wider">
+            메뉴
+          </div>
+          <ul className="space-y-1">
             <li>
-              <Link href="/admin">대시보드</Link>
+              <Link 
+                href="/admin" 
+                className={`flex items-center px-3 py-2.5 text-sm rounded-md transition-colors ${
+                  pathname === '/admin' 
+                    ? 'bg-indigo-600 text-white font-medium' 
+                    : 'text-slate-300 hover:text-white hover:bg-slate-800'
+                }`}
+              >
+                <LayoutDashboard className="h-4 w-4 mr-3 shrink-0" />
+                <span>대시보드</span>
+              </Link>
             </li>
             <li>
-              <Link href="/admin/solopreneurs">솔로프리너 관리</Link>
+              <Link 
+                href="/admin/solopreneurs" 
+                className={`flex items-center px-3 py-2.5 text-sm rounded-md transition-colors ${
+                  pathname?.includes('/admin/solopreneurs') 
+                    ? 'bg-indigo-600 text-white font-medium' 
+                    : 'text-slate-300 hover:text-white hover:bg-slate-800'
+                }`}
+              >
+                <Users className="h-4 w-4 mr-3 shrink-0" />
+                <span>솔로프리너 관리</span>
+              </Link>
+            </li>
+            <li>
+              <Link 
+                href="/" 
+                className="flex items-center px-3 py-2.5 text-sm rounded-md transition-colors text-slate-300 hover:text-white hover:bg-slate-800"
+              >
+                <Home className="h-4 w-4 mr-3 shrink-0" />
+                <span>홈페이지로 이동</span>
+              </Link>
             </li>
           </ul>
         </nav>
         
-        <div className="sidebar-footer">
-          <button onClick={handleLogout} className="logout-button">
+        <div className="p-5 border-t border-slate-700/50">
+          <button 
+            onClick={handleLogout} 
+            className="flex items-center justify-center w-full px-4 py-2 text-sm font-medium text-white bg-red-600 rounded-md hover:bg-red-700 transition-colors"
+          >
+            <LogOut className="h-4 w-4 mr-2" />
             로그아웃
           </button>
         </div>
       </aside>
       
-      <div className="admin-content">
+      {/* 메인 콘텐츠 */}
+      <main className="flex-1 overflow-auto">
         {children}
-      </div>
-      
-      <style jsx>{`
-        .admin-layout {
-          display: flex;
-          min-height: 100vh;
-        }
-        
-        .admin-sidebar {
-          width: 250px;
-          background-color: #1e293b;
-          color: white;
-          padding: 1.5rem;
-          display: flex;
-          flex-direction: column;
-        }
-        
-        .sidebar-header h1 {
-          font-size: 1.25rem;
-          font-weight: 600;
-          margin-bottom: 2rem;
-        }
-        
-        .sidebar-nav {
-          flex: 1;
-        }
-        
-        .sidebar-nav ul {
-          list-style: none;
-          padding: 0;
-          margin: 0;
-        }
-        
-        .sidebar-nav li {
-          margin-bottom: 0.5rem;
-        }
-        
-        .sidebar-nav a {
-          display: block;
-          padding: 0.5rem 0;
-          color: #cbd5e1;
-          text-decoration: none;
-          transition: color 0.2s;
-        }
-        
-        .sidebar-nav a:hover {
-          color: white;
-        }
-        
-        .admin-content {
-          flex: 1;
-          padding: 2rem;
-          background-color: #f8fafc;
-        }
-        
-        .sidebar-footer {
-          padding: 1.5rem 0 0 0;
-          border-top: 1px solid #334155;
-          margin-top: 1.5rem;
-        }
-        
-        .logout-button {
-          display: block;
-          width: 100%;
-          padding: 0.625rem;
-          background-color: #ef4444;
-          color: white;
-          border: none;
-          border-radius: 0.375rem;
-          font-weight: 500;
-          cursor: pointer;
-          transition: background-color 0.2s;
-        }
-        
-        .logout-button:hover {
-          background-color: #dc2626;
-        }
-      `}</style>
+      </main>
     </div>
   )
 } 

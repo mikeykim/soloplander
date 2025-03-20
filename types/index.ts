@@ -37,6 +37,7 @@ export interface ISolopreneur {
       linkedin?: string;
     }
   };
+  keywords?: string[];
   created_at?: string;
   updated_at?: string;
 }

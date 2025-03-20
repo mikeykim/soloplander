@@ -22,37 +22,32 @@ const regionMap = {
 
 // 키워드 정의 (이모지와 함께)
 const keywords = [
+  { id: 'ai', label: '🤖 AI', emoji: '🤖' },
   { id: 'business', label: '💼 Business', emoji: '💼' },
   { id: 'tech', label: '💻 Tech', emoji: '💻' },
   { id: 'marketing', label: '📊 Marketing', emoji: '📊' },
   { id: 'content', label: '🎬 Content', emoji: '🎬' },
   { id: 'finance', label: '💰 Finance', emoji: '💰' },
   { id: 'data', label: '📈 Data', emoji: '📈' },
-  { id: 'ai', label: '🤖 AI', emoji: '🤖' },
   { id: 'design', label: '🎨 Design', emoji: '🎨' },
   { id: 'development', label: '👨‍💻 Development', emoji: '👨‍💻' },
   { id: 'education', label: '🎓 Education', emoji: '🎓' },
 ]
 
-// 솔로프리너와 키워드 매핑
-const solopreneurKeywords: Record<string, string[]> = {
-  "Alex Hormozi": ["business", "marketing", "content"],
-  "Pat Walls": ["business", "content"],
-  "Pieter Levels": ["tech", "development", "business"],
-  "Marc Lou": ["tech", "development", "business"],
-  "Ruri Ohama": ["content", "business"],
-  "Ara Koh": ["design", "content", "business"],
-  "Kei Fujikawa": ["tech", "development"],
-  "Richard Lim": ["data", "ai", "education"],
-  "Wes Mcdowell": ["marketing", "business"],
-  "Charlie Chang": ["finance", "content"],
-  "Noah Kagan": ["business", "marketing", "tech"],
-  "Ben AI": ["ai", "tech", "content"],
-  "Greg Isenberg": ["business", "marketing"],
-  "Phoebe Yu": ["business", "content"],
-  "Stefanovic": ["content", "education"],
-  "Timo Nikolai": ["ai", "marketing", "tech"],
-  "David Ondrej": ["ai", "tech", "development"]
+// 키워드 ID와 라벨 매핑 함수
+const getKeywordLabel = (id: string): string => {
+  const keyword = keywords.find(k => k.id === id);
+  return keyword ? keyword.label : id;
+}
+
+// 키워드 라벨에서 ID 추출 함수 (이모지 제거 포함)
+const getKeywordIdFromLabel = (label: string): string | null => {
+  const cleanedLabel = label.split(' ').pop() || '';
+  const keyword = keywords.find(k => 
+    k.label.toLowerCase().includes(cleanedLabel.toLowerCase()) || 
+    cleanedLabel.toLowerCase().includes(k.id)
+  );
+  return keyword ? keyword.id : null;
 }
 
 export default function WorldMap() {
@@ -64,6 +59,7 @@ export default function WorldMap() {
     'Europe': [],
     'Asia': []
   })
+  const [keywordsMap, setKeywordsMap] = useState<Record<string, string[]>>({})
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
@@ -93,6 +89,18 @@ export default function WorldMap() {
           'Europe': europeData,
           'Asia': asiaData
         });
+
+        // 키워드 맵 구성
+        const newKeywordsMap: Record<string, string[]> = {};
+        
+        // 모든 지역의 데이터를 순회하며 키워드 맵 구성
+        [...usaData, ...europeData, ...asiaData].forEach(solopreneur => {
+          if (solopreneur.name && solopreneur.keywords) {
+            newKeywordsMap[solopreneur.name] = solopreneur.keywords;
+          }
+        });
+        
+        setKeywordsMap(newKeywordsMap);
       } catch (err) {
         console.error('솔로프리너 데이터 가져오기 오류:', err);
         setError('데이터를 불러오는 중 오류가 발생했습니다.');
@@ -119,11 +127,14 @@ export default function WorldMap() {
   }
 
   const toggleKeyword = (keywordId: string) => {
-    setSelectedKeywords(prev => 
-      prev.includes(keywordId) 
+    console.log(`토글 키워드: ${keywordId} (${getKeywordLabel(keywordId)})`);
+    setSelectedKeywords(prev => {
+      const newKeywords = prev.includes(keywordId) 
         ? prev.filter(k => k !== keywordId) 
-        : [...prev, keywordId]
-    )
+        : [...prev, keywordId];
+      console.log('선택된 키워드:', newKeywords.map(k => `${k} (${getKeywordLabel(k)})`));
+      return newKeywords;
+    });
   }
 
   // 필터링된 솔로프리너 목록
@@ -150,9 +161,50 @@ export default function WorldMap() {
     // 키워드로 필터링
     if (selectedKeywords.length > 0) {
       solopreneurs = solopreneurs.filter(s => {
-        const personKeywords = solopreneurKeywords[s.name] || []
-        return selectedKeywords.some(k => personKeywords.includes(k))
-      })
+        // API에서 가져온 키워드 사용 (혹은 keywordsMap에서 가져온 키워드)
+        const personKeywords = s.keywords || keywordsMap[s.name] || [];
+        
+        // 디버깅용 로그
+        console.log('Person:', s.name);
+        console.log('Keywords DB:', personKeywords);
+        console.log('Selected Keywords:', selectedKeywords.map(k => `${k} (${getKeywordLabel(k)})`));
+        
+        // 키워드 매칭 확인
+        const matches = selectedKeywords.some(selectedKey => {
+          // 선택된 키워드 ID (예: 'business')
+          const selectedKeyLower = selectedKey.toLowerCase();
+          
+          // 각 키워드에 대해 확인
+          const found = personKeywords.some(personKeyword => {
+            // DB에 저장된 키워드 (예: '💼 Business')에서 텍스트 부분만 추출
+            const keywordText = personKeyword.split(' ').pop() || '';
+            const normalizedKeyword = keywordText.toLowerCase();
+            
+            // 1. 정확한 일치 확인 (대소문자 무시)
+            const exactMatch = normalizedKeyword === selectedKeyLower;
+            
+            // 2. 부분 문자열 포함 확인
+            const partialMatch = normalizedKeyword.includes(selectedKeyLower) || 
+                               selectedKeyLower.includes(normalizedKeyword);
+            
+            // 3. 매핑 함수를 통한 ID 확인
+            const mappedId = getKeywordIdFromLabel(personKeyword);
+            const idMatch = mappedId === selectedKey;
+            
+            // 결과 로깅
+            console.log(`비교 [${s.name}]: DB='${personKeyword}' vs 선택='${selectedKey}'`);
+            console.log(`  - 정규화: '${normalizedKeyword}' vs '${selectedKeyLower}'`);
+            console.log(`  - 결과: 정확=${exactMatch}, 부분=${partialMatch}, ID=${idMatch}`);
+            
+            return exactMatch || partialMatch || idMatch;
+          });
+          
+          return found;
+        });
+        
+        console.log(`${s.name}: 매칭 결과 = ${matches ? '일치' : '불일치'}`);
+        return matches;
+      });
     }
 
     // 솔로프리너를 생성일 기준으로 정렬 (오래된 순)
@@ -165,7 +217,7 @@ export default function WorldMap() {
       // created_at이 없으면 원래 순서 유지
       return 0;
     });
-  }, [selectedRegion, searchTerm, selectedKeywords, solopreneursData])
+  }, [selectedRegion, searchTerm, selectedKeywords, solopreneursData, keywordsMap])
 
   // 선택된 지역에 대한 맵 아이템 렌더링
   const renderSelectedRegionMap = () => {

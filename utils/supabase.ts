@@ -3,19 +3,31 @@ import { createClient } from '@supabase/supabase-js';
 // 환경 변수에서 Supabase URL과 API 키 가져오기
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || '';
 const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || '';
+const supabaseServiceKey = process.env.SUPABASE_SERVICE_KEY || '';
 
 // 개발 환경에서 환경 변수 확인 로그
 if (process.env.NODE_ENV === 'development') {
   console.log('Supabase URL:', supabaseUrl);
   console.log('Supabase Key:', supabaseKey ? 'Set (not showing for security)' : 'Not set');
+  console.log('Supabase Service Key:', supabaseServiceKey ? 'Set (not showing for security)' : 'Not set');
 }
 
 // 환경 변수 설정 여부 확인
 const isSupabaseConfigured = supabaseUrl && supabaseKey;
+const isServiceKeyConfigured = supabaseUrl && supabaseServiceKey;
 
 // 실제 Supabase 클라이언트 생성
 const realSupabaseClient = isSupabaseConfigured 
   ? createClient(supabaseUrl, supabaseKey, {
+      auth: {
+        persistSession: false,
+      },
+    })
+  : null;
+
+// 서비스 롤 키를 사용하는 Supabase 클라이언트 생성 (RLS 우회)
+const serviceRoleSupabaseClient = isServiceKeyConfigured
+  ? createClient(supabaseUrl, supabaseServiceKey, {
       auth: {
         persistSession: false,
       },
@@ -105,6 +117,7 @@ const dummySupabaseClient = {
 
 // Supabase 클라이언트 내보내기
 export const supabase = isSupabaseConfigured && realSupabaseClient ? realSupabaseClient : dummySupabaseClient;
+export const serviceSupabase = isServiceKeyConfigured && serviceRoleSupabaseClient ? serviceRoleSupabaseClient : dummySupabaseClient;
 
 // 연결 테스트 함수
 export const testSupabaseConnection = async () => {

@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { supabase, testSupabaseConnection } from '@/utils/supabase';
+import { supabase, serviceSupabase, testSupabaseConnection } from '@/utils/supabase';
 
 // 임시 데이터
 const tempSolopreneurs = {
@@ -255,9 +255,15 @@ export async function PUT(
   try {
     const id = params.id;
     const body = await request.json();
-    const { name, region, image, description, gender, links = {}, keywords = [] } = body;
+    const { name, region, image, description, gender, links: linkUpdates, keywords = [] } = body;
     
-    console.log(`솔로프리너 ${id} 업데이트 요청 본문:`, JSON.stringify(body, null, 2));
+    // keywords가 문자열 배열임을 보장
+    const typedKeywords: string[] = Array.isArray(keywords) 
+      ? keywords.map(k => typeof k === 'string' ? k : String(k))
+      : [];
+      
+    console.log('솔로프리너 업데이트 요청 처리:', { name, description, gender, region, image });
+    console.log('키워드 업데이트:', typedKeywords);
     
     // 필수 필드 검증
     if (!name || !region || !description || !gender) {
@@ -292,8 +298,8 @@ export async function PUT(
       
       return NextResponse.json({
         ...mockSolopreneur,
-        links,
-        keywords
+        links: linkUpdates,
+        keywords: typedKeywords,
       });
     }
     
@@ -359,7 +365,7 @@ export async function PUT(
     }, null, 2));
     
     // 링크 업데이트 (기존 링크 삭제 후 새로 추가)
-    if (Object.keys(links).length > 0) {
+    if (Object.keys(linkUpdates).length > 0) {
       // 기존 링크 삭제
       const { error: deleteLinksError } = await supabase
         .from('solopreneur_links')
@@ -377,11 +383,11 @@ export async function PUT(
       const linkInserts: { solopreneur_id: string; platform: string; url: string }[] = [];
       
       for (const platform of platforms) {
-        if (links[platform]) {
+        if (linkUpdates[platform]) {
           linkInserts.push({
             solopreneur_id: id,
             platform,
-            url: links[platform],
+            url: linkUpdates[platform],
           });
         }
       }
@@ -400,7 +406,7 @@ export async function PUT(
     }
     
     // 미리보기 이미지 업데이트 (기존 이미지 삭제 후 새로 추가)
-    if (links.previews && Object.keys(links.previews).length > 0) {
+    if (linkUpdates.previews && Object.keys(linkUpdates.previews).length > 0) {
       // 기존 미리보기 이미지 삭제
       const { error: deletePreviewsError } = await supabase
         .from('solopreneur_previews')
@@ -418,11 +424,11 @@ export async function PUT(
       const previewInserts: { solopreneur_id: string; platform: string; image_url: string }[] = [];
       
       for (const platform of platforms) {
-        if (links.previews[platform]) {
+        if (linkUpdates.previews[platform]) {
           previewInserts.push({
             solopreneur_id: id,
             platform,
-            image_url: links.previews[platform],
+            image_url: linkUpdates.previews[platform],
           });
         }
       }
@@ -443,43 +449,160 @@ export async function PUT(
     }
     
     // 키워드 업데이트 (기존 키워드 삭제 후 새로 추가)
-    if (keywords && keywords.length > 0) {
-      // 기존 키워드 삭제
-      const { error: deleteKeywordsError } = await supabase
-        .from('solopreneur_keywords')
-        .delete()
-        .eq('solopreneur_id', id);
+    try {
+      console.log(`솔로프리너 ID ${id}의 키워드 업데이트 시작...`);
+      console.log(`요청된 키워드: ${JSON.stringify(typedKeywords)}`);
       
-      if (deleteKeywordsError) {
-        console.error('키워드 삭제 오류:', deleteKeywordsError);
+      // 키워드 처리 로직
+      let resultKeywords = typedKeywords || [];
+      
+      // 1. 숫자형 ID 확인
+      let numericId: number;
+      try {
+        numericId = parseInt(id);
+        if (isNaN(numericId)) {
+          throw new Error('ID를 숫자로 변환할 수 없습니다');
+        }
+      } catch (err) {
+        console.error('ID 변환 오류:', err);
+        // 문자열 ID 사용
+        numericId = id as unknown as number;
       }
       
-      // 새 키워드 추가
-      const keywordInserts = keywords.map(keyword => ({
-        solopreneur_id: id,
-        keyword
-      }));
+      console.log(`변환된 솔로프리너 ID: ${numericId}, 타입: ${typeof numericId}`);
       
-      console.log('추가할 키워드:', JSON.stringify(keywordInserts, null, 2));
-      
-      if (keywordInserts.length > 0) {
-        const { error: insertKeywordsError } = await supabase
-          .from('solopreneur_keywords')
-          .insert(keywordInserts);
+      // 2. SQL 함수를 통한 키워드 업데이트 시도
+      try {
+        console.log(`SQL 함수를 사용한 키워드 업데이트 시도...`);
         
-        if (insertKeywordsError) {
-          console.error('키워드 추가 오류:', insertKeywordsError);
+        // 키워드 전처리 - 중복 제거 및 빈 문자열 필터링
+        const processedKeywords = [...new Set(typedKeywords)]
+          .map(k => k.trim())
+          .filter(k => k.length > 0);
+          
+        if (processedKeywords.length > 0) {
+          // 직접 SQL 쿼리 실행
+          console.log(`직접 SQL 실행: 기존 키워드 삭제`);
+          
+          // 1. 기존 키워드 삭제
+          const { error: deleteKeywordsError } = await serviceSupabase
+            .from('solopreneur_keywords')
+            .delete()
+            .eq('solopreneur_id', numericId);
+          
+          if (deleteKeywordsError) {
+            console.error('키워드 삭제 오류:', deleteKeywordsError.message);
+          } else {
+            console.log(`키워드 삭제 성공`);
+            
+            // 2. 새 키워드 추가
+            console.log(`키워드 추가 시작 (${processedKeywords.length}개)`);
+            
+            let insertSuccessCount = 0;
+            for (const keyword of processedKeywords) {
+              const { error: insertError } = await serviceSupabase
+                .from('solopreneur_keywords')
+                .insert({
+                  solopreneur_id: numericId,
+                  keyword,
+                  created_at: new Date().toISOString(),
+                  updated_at: new Date().toISOString()
+                });
+              
+              if (insertError) {
+                console.error(`키워드 '${keyword}' 추가 실패:`, insertError.message);
+              } else {
+                insertSuccessCount++;
+                console.log(`키워드 '${keyword}' 추가 성공`);
+              }
+            }
+            
+            console.log(`${insertSuccessCount}/${processedKeywords.length} 키워드 추가 완료`);
+            
+            // 성공한 키워드 조회
+            const { data: addedKeywords, error: fetchError } = await serviceSupabase
+              .from('solopreneur_keywords')
+              .select('keyword')
+              .eq('solopreneur_id', numericId);
+            
+            if (!fetchError && addedKeywords && addedKeywords.length > 0) {
+              resultKeywords = addedKeywords.map(k => k.keyword);
+              console.log(`조회된 키워드 (${resultKeywords.length}개): ${JSON.stringify(resultKeywords)}`);
+            } else {
+              console.log(`키워드 조회 실패 또는 키워드 없음, UI용으로 원본 키워드 사용`);
+              resultKeywords = processedKeywords;
+            }
+          }
+        }
+      } catch (sqlFuncError) {
+        console.error('키워드 관리 중 예외 발생:', sqlFuncError);
+      }
+      
+      // 3. 표준 방식으로 추가 시도 (fallback)
+      if (resultKeywords.length === 0 || resultKeywords.length !== typedKeywords.filter(k => k.trim()).length) {
+        console.log('직접 업데이트 방식 실패. 일반 클라이언트로 재시도...');
+        
+        // 기존 키워드 삭제
+        const { error: stdDeleteError } = await supabase
+          .from('solopreneur_keywords')
+          .delete()
+          .eq('solopreneur_id', numericId);
+        
+        if (stdDeleteError) {
+          console.error('표준 클라이언트로 키워드 삭제 실패:', stdDeleteError.message);
         } else {
-          console.log(`${keywordInserts.length}개 키워드 성공적으로 추가됨`);
+          const processedKeywords = [...new Set(typedKeywords)]
+            .map(k => k.trim())
+            .filter(k => k.length > 0);
+          
+          // 키워드 개별 추가
+          let stdInsertSuccessCount = 0;
+          for (const keyword of processedKeywords) {
+            const { error: stdInsertError } = await supabase
+              .from('solopreneur_keywords')
+              .insert({
+                solopreneur_id: numericId,
+                keyword,
+                created_at: new Date().toISOString(),
+                updated_at: new Date().toISOString()
+              });
+            
+            if (!stdInsertError) {
+              stdInsertSuccessCount++;
+            }
+          }
+          
+          console.log(`표준 클라이언트: ${stdInsertSuccessCount}/${processedKeywords.length} 키워드 추가 성공`);
+          
+          // 키워드 조회
+          const { data: stdKeywords } = await supabase
+            .from('solopreneur_keywords')
+            .select('keyword')
+            .eq('solopreneur_id', numericId);
+          
+          if (stdKeywords && stdKeywords.length > 0) {
+            resultKeywords = stdKeywords.map(k => k.keyword);
+          }
         }
       }
+      
+      // 4. 응답 데이터 반환 (성공 또는 실패 여부와 관계없이 UI 업데이트)
+      return NextResponse.json({
+        ...solopreneur,
+        links: linkUpdates,
+        keywords: resultKeywords,
+      });
+      
+    } catch (error) {
+      console.error('키워드 처리 중 예외 발생:', error);
+      
+      // 키워드 업데이트 실패 시에도 기본 데이터는 반환
+      return NextResponse.json({
+        ...solopreneur,
+        links: linkUpdates,
+        keywords: typedKeywords || [],
+      });
     }
-    
-    return NextResponse.json({
-      ...solopreneur,
-      links,
-      keywords,
-    });
   } catch (error) {
     console.error('솔로프리너 업데이트 중 오류:', error);
     return NextResponse.json(
