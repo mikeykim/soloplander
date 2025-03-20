@@ -4,11 +4,12 @@ import { exec } from 'child_process';
 import { promisify } from 'util';
 import * as path from 'path';
 import * as fs from 'fs';
+import { supabase, serviceSupabase } from '@/utils/supabase';
 
-// Supabase 클라이언트 초기화 (서비스 키 사용)
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || '';
-const supabaseServiceKey = process.env.SUPABASE_SERVICE_KEY || '';
-const supabase = createClient(supabaseUrl, supabaseServiceKey);
+// 환경 변수 로깅 (디버깅 용도)
+console.log('환경 변수 확인:');
+console.log('NEXT_PUBLIC_SUPABASE_URL 설정됨:', !!process.env.NEXT_PUBLIC_SUPABASE_URL);
+console.log('SUPABASE_SERVICE_KEY 설정됨:', !!process.env.SUPABASE_SERVICE_KEY);
 
 // 관리자 비밀번호 확인
 const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || 'admin1234';
@@ -149,7 +150,7 @@ export async function POST(request: NextRequest) {
       const uniqueKeywords = [...new Set(validKeywords)];
       
       // 1. 기존 키워드 삭제
-      const { error: deleteError } = await supabase
+      const { error: deleteError } = await serviceSupabase
         .from('solopreneur_keywords')
         .delete()
         .eq('solopreneur_id', solopreneur_id);
@@ -169,10 +170,12 @@ export async function POST(request: NextRequest) {
       if (uniqueKeywords.length > 0) {
         const keywordInserts = uniqueKeywords.map(keyword => ({
           solopreneur_id,
-          keyword
+          keyword,
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString()
         }));
         
-        const { error: insertError } = await supabase
+        const { error: insertError } = await serviceSupabase
           .from('solopreneur_keywords')
           .insert(keywordInserts);
         
@@ -190,7 +193,7 @@ export async function POST(request: NextRequest) {
       }
       
       // 3. 업데이트된 키워드 확인
-      const { data: updatedKeywords, error: selectError } = await supabase
+      const { data: updatedKeywords, error: selectError } = await serviceSupabase
         .from('solopreneur_keywords')
         .select('keyword')
         .eq('solopreneur_id', solopreneur_id);
